@@ -28,7 +28,8 @@
             "group": "Software Development",
             "icon": "code",
             "pages": [
-              "blog/software-development/placeholder"
+              "blog/software-development/placeholder",
+              "blog/software-development/pop-quiz-software-testing"
             ]
           },
           {
@@ -55,10 +56,11 @@
             "pages": ["blog/all-posts"]
           },
           {
-            "group": "2025 Q2",
+            "group": "By Quarter",
             "icon": "calendar",
             "pages": [
-              "blog/2025-q2/placeholder"
+              "blog/2025-q2/placeholder",
+              "blog/software-development/pop-quiz-software-testing"
             ]
           }
         ]

@@ -1,0 +1,68 @@
+---
+title: "Pop Quiz: Software Testing"
+description: "A pop quiz exploring software testing concepts including global state issues, flaky tests, coverage paradoxes, and testing best practices"
+---
+
+# Pop Quiz: Software Testing
+
+*Posted by Dickson Tsai on May 18, 2025*
+
+This blog post presents a pop quiz format exploring software testing concepts. I'm experimenting with this educational approach to share software engineering insights and help identify knowledge gaps.
+
+## The Five Questions
+
+The quiz addresses critical testing challenges:
+
+1. **Global State Issues** - Why applications with global state create testing difficulties
+2. **Flaky Tests** - Definition and common causes of inconsistent test results
+3. **Production Bugs Despite Green Tests** - Common blind spots in testing approaches
+4. **100% Code Coverage Paradox** - Why full line coverage doesn't guarantee correctness
+5. **Mock Liabilities** - When mocks become problematic during refactoring
+
+## Key Answers
+
+### Global State
+
+Global state creates test isolation problems where changes in one test unexpectedly break others. When tests share mutable global variables or singletons, modifications in one test can affect subsequent tests, making test results depend on execution order and leading to unpredictable failures.
+
+### Flaky Tests
+
+Flaky tests stem from several common issues:
+- **Race conditions** - Tests that depend on timing or thread execution order
+- **Time dependencies** - Tests that rely on current time or date
+- **Shared state** - Tests that don't properly clean up or isolate their state
+- **Unstable external services** - Tests that depend on network calls or external APIs
+- **Unseeded random numbers** - Tests using random values without fixed seeds
+
+### Testing Blind Spots
+
+Common reasons why bugs slip through despite passing tests:
+- **Testing only happy paths** - Not covering error cases and edge conditions
+- **Weak assertions** - Tests that pass but don't actually verify the correct behavior
+- **Environment differences** - Variations between test and production environments
+
+### Coverage ≠ Correctness
+
+100% line coverage reveals which code paths were executed but not whether the logic is correct or business requirements are fulfilled. You can achieve full coverage while missing:
+- Logic errors
+- Edge cases
+- Business rule violations
+- Integration issues
+
+### Over-Mocking
+
+Mocks become problematic when they couple too tightly to implementation details rather than interfaces. This causes tests to break unnecessarily during refactoring, even when the actual behavior hasn't changed. Good mocks verify contracts, not implementation.
+
+## Recommendation
+
+Uncle Bob's **FIRST** acronym provides excellent guidance for quality tests:
+
+- **Fast** - Tests should run quickly
+- **Isolated** - Tests should not depend on each other
+- **Repeatable** - Tests should produce consistent results
+- **Self-Validating** - Tests should have clear pass/fail outcomes
+- **Timely/Thorough** - Tests should be written at the right time and cover thoroughly
+
+---
+
+*Original post: [blog.dicksontsai.com](https://blog.dicksontsai.com/2025/05/pop-quiz-software-testing.html)*

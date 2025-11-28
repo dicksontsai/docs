@@ -1,84 +1,73 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Dickson Tsai",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#2196F3",
+    "light": "#64B5F6",
+    "dark": "#1976D2"
   },
   "favicon": "/favicon.svg",
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Home",
+        "pages": ["index"]
+      },
+      {
+        "tab": "Blog",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Claude Code",
+            "icon": "robot",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "blog/claude-code/placeholder"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Software Development",
+            "icon": "code",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "blog/software-development/placeholder"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Learning and Teaching",
+            "icon": "graduation-cap",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "blog/learning-and-teaching/placeholder"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Fun",
+            "icon": "gamepad",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "blog/fun/placeholder"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
-            ]
-          }
-        ]
+        "tab": "All Posts",
+        "pages": ["blog/all-posts"]
       }
     ],
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Twitter",
+          "href": "https://twitter.com/anthropicai",
+          "icon": "x-twitter"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "LinkedIn",
+          "href": "https://linkedin.com",
+          "icon": "linkedin"
+        },
+        {
+          "anchor": "YouTube",
+          "href": "https://youtube.com",
+          "icon": "youtube"
         }
       ]
     }
@@ -90,33 +79,16 @@
   "navbar": {
     "links": [
       {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "label": "Contact",
+        "href": "mailto:contact@dicksontsai.com"
       }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+    ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com",
+      "github": "https://github.com",
+      "linkedin": "https://linkedin.com"
     }
   }
 }

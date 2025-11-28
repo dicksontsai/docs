@@ -1,0 +1,26 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "Personal blog migrated to [Mintlify](https://mintlify.com) documentation platform.",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write \"**/*.{mdx,md,json,js,jsx,ts,tsx}\"",
+    "format:check": "prettier --check \"**/*.{mdx,md,json,js,jsx,ts,tsx}\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dicksontsai/docs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/dicksontsai/docs/issues"
+  },
+  "homepage": "https://github.com/dicksontsai/docs#readme",
+  "devDependencies": {
+    "prettier": "^3.7.2"
+  }
+}

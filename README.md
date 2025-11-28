@@ -1,6 +1,7 @@
 # Dickson Tsai's Blog - Mintlify Migration
 
-Personal blog migrated to [Mintlify](https://mintlify.com) documentation platform.
+Personal blog migrated to [Mintlify](https://mintlify.com) documentation
+platform.
 
 ## Site Structure
 
@@ -38,8 +39,8 @@ Create a new `.mdx` file in the appropriate topic folder:
 
 ```mdx
 ---
-title: "Your Post Title"
-description: "A brief description for SEO and previews"
+title: 'Your Post Title'
+description: 'A brief description for SEO and previews'
 ---
 
 Your content here using MDX format...
@@ -57,10 +58,7 @@ Update `docs.json` to include the new post in the appropriate group:
 {
   "group": "Claude Code",
   "icon": "robot",
-  "pages": [
-    "blog/claude-code/existing-post",
-    "blog/claude-code/your-new-post"
-  ]
+  "pages": ["blog/claude-code/existing-post", "blog/claude-code/your-new-post"]
 }
 ```
 
@@ -75,6 +73,7 @@ Add an `<Update>` entry in `blog/all-posts.mdx` (newest posts at top):
 Brief description of the post.
 
 [Read more →](/blog/claude-code/your-new-post)
+
 </Update>
 ```
 
@@ -130,7 +129,9 @@ mint update
 
 ## Deployment
 
-Install the [Mintlify GitHub App](https://dashboard.mintlify.com/settings/organization/github-app) to enable automatic deployments when pushing to the main branch.
+Install the
+[Mintlify GitHub App](https://dashboard.mintlify.com/settings/organization/github-app)
+to enable automatic deployments when pushing to the main branch.
 
 ## Resources
 

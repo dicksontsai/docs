@@ -16,52 +16,30 @@
       },
       {
         "tab": "Blog",
+        "pages": ["blog/all-posts/2025-q2"]
+      },
+      {
+        "tab": "By Topic",
         "groups": [
           {
             "group": "Claude Code",
             "icon": "robot",
-            "pages": [
-              "blog/claude-code/placeholder"
-            ]
+            "pages": ["blog/claude-code/all-posts"]
           },
           {
             "group": "Software Development",
             "icon": "code",
-            "pages": [
-              "blog/software-development/placeholder",
-              "blog/software-development/pop-quiz-software-testing"
-            ]
+            "pages": ["blog/software-development/all-posts"]
           },
           {
             "group": "Learning and Teaching",
             "icon": "graduation-cap",
-            "pages": [
-              "blog/learning-and-teaching/placeholder"
-            ]
+            "pages": ["blog/learning-and-teaching/all-posts"]
           },
           {
             "group": "Fun",
             "icon": "gamepad",
-            "pages": [
-              "blog/fun/placeholder"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "All Posts",
-        "groups": [
-          {
-            "group": "All Posts",
-            "pages": ["blog/all-posts"]
-          },
-          {
-            "group": "By Quarter",
-            "icon": "calendar",
-            "pages": [
-              "blog/2025-q2/placeholder",
-              "blog/software-development/pop-quiz-software-testing"
-            ]
+            "pages": ["blog/fun/all-posts"]
           }
         ]
       }

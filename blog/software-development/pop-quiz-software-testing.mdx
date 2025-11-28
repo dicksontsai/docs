@@ -1,68 +1,94 @@
 ---
-title: "Pop Quiz: Software Testing"
-description: "A pop quiz exploring software testing concepts including global state issues, flaky tests, coverage paradoxes, and testing best practices"
+title: 'Pop Quiz: Software Testing'
+description:
+  'A pop quiz exploring software testing concepts including global state issues,
+  flaky tests, coverage paradoxes, and testing best practices'
 ---
 
-# Pop Quiz: Software Testing
+Pop quizzes are a fun way to discover knowledge gaps. I'm experimenting with
+this format to distill my software engineering experience and hopefully provide
+something both informative and entertaining!
 
-*Posted by Dickson Tsai on May 18, 2025*
+While AI code generation tools are now accessible to everyone, experienced
+engineers maintain a critical advantage: they know how to direct AI to write
+testable code and verify it properly. Here's a pop quiz on software testing to
+evaluate your engineering acumen:
 
-This blog post presents a pop quiz format exploring software testing concepts. I'm experimenting with this educational approach to share software engineering insights and help identify knowledge gaps.
+## Quiz
 
-## The Five Questions
+**Question 1**: Why do applications with global state present challenges for
+testing? (Hint: Think about test isolation and predictability.)
 
-The quiz addresses critical testing challenges:
+**Question 2**: What is a "flaky test" and what are the most common factors that
+cause this testing challenge? (Hint: It's about inconsistent results.)
 
-1. **Global State Issues** - Why applications with global state create testing difficulties
-2. **Flaky Tests** - Definition and common causes of inconsistent test results
-3. **Production Bugs Despite Green Tests** - Common blind spots in testing approaches
-4. **100% Code Coverage Paradox** - Why full line coverage doesn't guarantee correctness
-5. **Mock Liabilities** - When mocks become problematic during refactoring
+**Question 3**: Your test suite shows all green, yet users still encounter
+critical bugs in production. What are the most common testing blind spots?
+(Hint: Are your tests seeing the whole picture and validating it thoroughly
+enough?)
 
-## Key Answers
+**Question 4**: An AI generates tests with 100% line coverage for your code.
+What critical failures might still lurk? (Hint: What does coverage not tell
+you?)
 
-### Global State
-
-Global state creates test isolation problems where changes in one test unexpectedly break others. When tests share mutable global variables or singletons, modifications in one test can affect subsequent tests, making test results depend on execution order and leading to unpredictable failures.
-
-### Flaky Tests
-
-Flaky tests stem from several common issues:
-- **Race conditions** - Tests that depend on timing or thread execution order
-- **Time dependencies** - Tests that rely on current time or date
-- **Shared state** - Tests that don't properly clean up or isolate their state
-- **Unstable external services** - Tests that depend on network calls or external APIs
-- **Unseeded random numbers** - Tests using random values without fixed seeds
-
-### Testing Blind Spots
-
-Common reasons why bugs slip through despite passing tests:
-- **Testing only happy paths** - Not covering error cases and edge conditions
-- **Weak assertions** - Tests that pass but don't actually verify the correct behavior
-- **Environment differences** - Variations between test and production environments
-
-### Coverage ≠ Correctness
-
-100% line coverage reveals which code paths were executed but not whether the logic is correct or business requirements are fulfilled. You can achieve full coverage while missing:
-- Logic errors
-- Edge cases
-- Business rule violations
-- Integration issues
-
-### Over-Mocking
-
-Mocks become problematic when they couple too tightly to implementation details rather than interfaces. This causes tests to break unnecessarily during refactoring, even when the actual behavior hasn't changed. Good mocks verify contracts, not implementation.
-
-## Recommendation
-
-Uncle Bob's **FIRST** acronym provides excellent guidance for quality tests:
-
-- **Fast** - Tests should run quickly
-- **Isolated** - Tests should not depend on each other
-- **Repeatable** - Tests should produce consistent results
-- **Self-Validating** - Tests should have clear pass/fail outcomes
-- **Timely/Thorough** - Tests should be written at the right time and cover thoroughly
+**Question 5**: At what point do mocks in your tests become a liability rather
+than an asset? (Hint: Think about what happens during refactoring.)
 
 ---
 
-*Original post: [blog.dicksontsai.com](https://blog.dicksontsai.com/2025/05/pop-quiz-software-testing.html)*
+## Answers
+
+### Q1: Global State Challenges
+
+Tests can influence each other
+
+A change in one test (e.g., modifying a global variable) can unexpectedly break
+another
+
+This makes achieving test isolation and predictable results difficult
+
+### Q2: Flaky Tests
+
+Definition: Tests that pass or fail inconsistently without code changes
+
+Common Causes: Race conditions, time dependencies (e.g., Thread.sleep()), shared
+state between tests, reliance on unstable external services, random numbers
+without seed
+
+### Q3: Green Tests, Production Bugs (Blind Spots)
+
+Testing only "happy paths"
+
+Weak or missing assertions (test runs but doesn't actually verify the right
+thing)
+
+Environment differences (test vs. prod)
+
+CAUTION: AIs may generate tests that optimize for passing, not verifying
+correctness!
+
+### Q4: 100% Coverage, Still Failing
+
+Does the code correctly implement the business logic?
+
+Coverage ≠ Correctness! Coverage tells you what lines were executed, not if the
+logic is sound or if it meets user needs
+
+### Q5: Mocks as a Liability
+
+When mocks are too tightly coupled to the "implementation details" of a
+dependency, rather than its "interface"
+
+This means benign refactoring of the dependency (which doesn't change its
+contract/interface) can break tests unnecessarily
+
+You can go surprisingly far in boosting your AI-generated code with thoughtful
+test design!
+
+For a great start, use Uncle Bob's FIRST acronym:
+
+- Fast
+- Isolated
+- Repeatable
+- Self-Validating
+- Timely/Thorough

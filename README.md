@@ -1,43 +1,140 @@
-# Mintlify Starter Kit
+# Dickson Tsai's Blog - Mintlify Migration
 
-Use the starter kit to get your docs deployed and ready to customize.
+Personal blog migrated to [Mintlify](https://mintlify.com) documentation platform.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+## Site Structure
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+```
+docs/
+├── docs.json              # Site configuration and navigation
+├── index.mdx              # Homepage with bio and featured topics
+├── blog/
+│   ├── all-posts.mdx      # Chronological list of all posts (newest first)
+│   ├── claude-code/       # AI coding assistant posts
+│   ├── software-development/  # Engineering posts
+│   ├── learning-and-teaching/ # Education and tutoring posts
+│   └── fun/               # Board games and hobbies
+├── images/                # Images for posts and site
+└── logo/                  # Site logos (light/dark modes)
+```
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+## Navigation
+
+The site uses three main tabs:
+
+1. **Home** - Landing page with bio, featured topics, and social links
+2. **Blog** - Topic-based navigation with four categories:
+   - Claude Code
+   - Software Development
+   - Learning and Teaching
+   - Fun
+3. **All Posts** - Reverse chronological list of all posts (blog-style)
+
+## Adding New Posts
+
+### Step 1: Create the post file
+
+Create a new `.mdx` file in the appropriate topic folder:
+
+```mdx
+---
+title: "Your Post Title"
+description: "A brief description for SEO and previews"
+---
+
+Your content here using MDX format...
+
+## Headings create table of contents
+
+Use standard markdown with MDX components.
+```
+
+### Step 2: Add to navigation
+
+Update `docs.json` to include the new post in the appropriate group:
+
+```json
+{
+  "group": "Claude Code",
+  "icon": "robot",
+  "pages": [
+    "blog/claude-code/existing-post",
+    "blog/claude-code/your-new-post"
+  ]
+}
+```
+
+### Step 3: Add to All Posts
+
+Add an `<Update>` entry in `blog/all-posts.mdx` (newest posts at top):
+
+```mdx
+<Update label="November 2024">
+## Your Post Title
+
+Brief description of the post.
+
+[Read more →](/blog/claude-code/your-new-post)
+</Update>
+```
+
+## Content Migration Checklist
+
+Posts to migrate from the existing blog:
+
+- [ ] SAT Reading Series Lessons (September 2021) → `learning-and-teaching/`
+- [ ] (Add other posts here as they're identified)
+
+### Migration Steps for Each Post
+
+1. Create `.mdx` file with proper frontmatter
+2. Convert HTML content to MDX/Markdown
+3. Move images to `/images/` folder and update paths
+4. Add to `docs.json` navigation
+5. Add entry to `all-posts.mdx`
+6. Test locally with `mint dev`
+
+## Customization TODO
+
+- [ ] Update logo files in `/logo/` with personal branding
+- [ ] Add profile image to `/images/`
+- [ ] Update social links in `docs.json` and `index.mdx`
+- [ ] Configure favicon
+- [ ] Set up custom domain (if desired)
 
 ## Development
 
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
+### Prerequisites
 
-```
+- Node.js v20.17.0 or higher (LTS recommended)
+
+### Install CLI
+
+```bash
 npm i -g mint
 ```
 
-Run the following command at the root of your documentation, where your `docs.json` is located:
+### Local Preview
 
-```
+```bash
 mint dev
 ```
 
-View your local preview at `http://localhost:3000`.
+View at `http://localhost:3000`
 
-## Publishing changes
+### Update CLI
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+```bash
+mint update
+```
 
-## Need help?
+## Deployment
 
-### Troubleshooting
+Install the [Mintlify GitHub App](https://dashboard.mintlify.com/settings/organization/github-app) to enable automatic deployments when pushing to the main branch.
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+## Resources
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+- [Mintlify Documentation](https://mintlify.com/docs)
+- [MDX Guide](https://mintlify.com/docs/content/page)
+- [Navigation Configuration](https://mintlify.com/docs/organize/navigation)
+- [Changelog/Updates Component](https://mintlify.com/docs/create/changelogs)

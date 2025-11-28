@@ -1,0 +1,38 @@
+---
+title: "Fun Posts"
+description: "Board games, hobbies, and other interests"
+---
+
+# Fun
+
+This section contains posts about board games, hobbies, and other fun interests outside of work.
+
+<Info>
+Posts will be added here during the content migration. Each post will appear in the sidebar navigation.
+</Info>
+
+## Example Post Format
+
+When adding a new post, create a file like `favorite-board-games.mdx` with this structure:
+
+```mdx
+---
+title: "My Favorite Board Games of 2024"
+description: "A roundup of the best board games I played this year"
+---
+
+Your content here using MDX format...
+```
+
+Then add it to `docs.json` under the "Fun" group:
+
+```json
+{
+  "group": "Fun",
+  "icon": "gamepad",
+  "pages": [
+    "blog/fun/placeholder",
+    "blog/fun/favorite-board-games"
+  ]
+}
+```

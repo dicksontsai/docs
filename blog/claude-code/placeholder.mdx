@@ -1,0 +1,38 @@
+---
+title: "Claude Code Posts"
+description: "Thoughts and experiences building and using AI coding assistants"
+---
+
+# Claude Code
+
+This section contains posts about AI coding assistants, Claude Code development, and related topics.
+
+<Info>
+Posts will be added here during the content migration. Each post will appear in the sidebar navigation.
+</Info>
+
+## Example Post Format
+
+When adding a new post, create a file like `my-post-title.mdx` with this structure:
+
+```mdx
+---
+title: "Your Post Title"
+description: "A brief description for SEO and previews"
+---
+
+Your content here using MDX format...
+```
+
+Then add it to `docs.json` under the "Claude Code" group:
+
+```json
+{
+  "group": "Claude Code",
+  "icon": "robot",
+  "pages": [
+    "blog/claude-code/placeholder",
+    "blog/claude-code/my-post-title"
+  ]
+}
+```

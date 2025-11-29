@@ -16,50 +16,30 @@
       },
       {
         "tab": "Blog",
+        "pages": ["blog/all-posts/2025-q2"]
+      },
+      {
+        "tab": "By Topic",
         "groups": [
           {
-            "group": "Claude Code",
+            "group": "AI Coding",
             "icon": "robot",
-            "pages": [
-              "blog/claude-code/placeholder"
-            ]
+            "pages": ["blog/ai-coding/all-posts"]
           },
           {
             "group": "Software Development",
             "icon": "code",
-            "pages": [
-              "blog/software-development/placeholder"
-            ]
+            "pages": ["blog/software-development/all-posts"]
           },
           {
             "group": "Learning and Teaching",
             "icon": "graduation-cap",
-            "pages": [
-              "blog/learning-and-teaching/placeholder"
-            ]
+            "pages": ["blog/learning-and-teaching/all-posts"]
           },
           {
             "group": "Fun",
             "icon": "gamepad",
-            "pages": [
-              "blog/fun/placeholder"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "All Posts",
-        "groups": [
-          {
-            "group": "All Posts",
-            "pages": ["blog/all-posts"]
-          },
-          {
-            "group": "2025 Q2",
-            "icon": "calendar",
-            "pages": [
-              "blog/2025-q2/placeholder"
-            ]
+            "pages": ["blog/fun/all-posts"]
           }
         ]
       }
@@ -70,19 +50,12 @@
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
   },
-  "navbar": {
-    "links": [
-      {
-        "label": "Contact",
-        "href": "mailto:dickson@dicksontsai.com"
-      }
-    ]
-  },
   "footer": {
     "socials": {
       "x": "https://x.com/dickson_tsai",
       "youtube": "https://www.youtube.com/c/DicksonTsai",
-      "linkedin": "https://www.linkedin.com/in/dickson-tsai-10840a64/"
+      "linkedin": "https://www.linkedin.com/in/dickson-tsai-10840a64/",
+      "github": "https://github.com/dicksontsai"
     }
   }
 }

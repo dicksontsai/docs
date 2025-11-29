@@ -22,9 +22,9 @@
         "tab": "By Topic",
         "groups": [
           {
-            "group": "Claude Code",
+            "group": "AI Coding",
             "icon": "robot",
-            "pages": ["blog/claude-code/all-posts"]
+            "pages": ["blog/ai-coding/all-posts"]
           },
           {
             "group": "Software Development",

@@ -1,0 +1,144 @@
+---
+title: 'Pop Quiz: React Hooks & Advanced Patterns'
+description:
+  'An advanced pop quiz exploring React hooks, lifecycle timing, dependency arrays,
+  refs, memoization pitfalls, and the subtle bugs that catch experienced developers'
+---
+
+Pop quizzes are a fun way to discover knowledge gaps. I'm experimenting with
+this format to distill my software engineering experience and hopefully provide
+something both informative and entertaining!
+
+React's hooks API seems deceptively simple, but experienced developers know
+there's a minefield of subtle bugs waiting for the unwary. Here's a pop quiz to
+test your mastery of React's advanced patterns:
+
+## Quiz
+
+**Question 1**: You're using `useEffect` to set up a WebSocket subscription that
+depends on `userId` and `roomId`. ESLint's `react-hooks/exhaustive-deps` warns
+you to add a callback function to the dependency array, but adding it causes
+infinite re-renders. What's happening and how do you fix it? (Hint: Think about
+function identity and when functions are recreated.)
+
+**Question 2**: You have a `useEffect` that updates a piece of state based on
+an interval, but the state value inside the callback always shows the initial
+value, never the updated one. What's the root cause of this "stale closure"
+problem? (Hint: What does the closure capture, and when?)
+
+**Question 3**: You need to store a mutable value that persists across renders
+but doesn't trigger re-renders when changed. Your choices are `useState`,
+`useRef`, or a module-level variable. Which should you use and why? (Hint:
+Think about component instances and React's reconciliation.)
+
+**Question 4**: Your component re-renders frequently, so you wrap every callback
+in `useCallback` and every computation in `useMemo` to optimize performance.
+Performance actually gets worse. What went wrong? (Hint: Optimization isn't
+free.)
+
+**Question 5**: You need to measure a DOM element's dimensions after it renders.
+Should you use `useEffect` or `useLayoutEffect`, and what's the critical
+difference that affects user experience? (Hint: Think about timing and visual
+artifacts.)
+
+---
+
+## Answers
+
+### Q1: Dependency Array & Function Identity
+
+The callback function is recreated on every render, so adding it to the
+dependency array causes the effect to re-run infinitely.
+
+**Solutions:**
+
+1. Wrap the callback in `useCallback` with its own dependencies
+2. Use the functional update form: `setState(prev => ...)`instead of referencing
+   state in the callback
+3. Move the function inside the `useEffect` if it's only used there
+4. Use `useRef` to store the latest callback and call it via the ref (the
+   "latest ref" pattern)
+
+The ESLint rule is correct—ignoring it can lead to bugs with stale data!
+
+### Q2: Stale Closures
+
+When the effect runs, it captures the state value at that moment in a closure.
+If you create a setInterval inside a useEffect, the callback closes over the
+state value from when the effect ran, not the current value.
+
+**Solutions:**
+
+1. Use the functional update form: `setState(prev => prev + 1)` instead of
+   `setState(count + 1)`
+2. Add the state to the dependency array (though this recreates the interval)
+3. Use `useRef` to store the latest value and read from it in the callback
+4. Use a reducer with `useReducer` for complex state logic
+
+This is one of the most common React hooks gotchas!
+
+### Q3: useRef vs useState vs Module Variables
+
+Use `useRef`!
+
+- `useState`: Triggers re-renders on updates (not what you want)
+- Module-level variable: Shared across ALL component instances (breaks with
+  multiple instances)
+- `useRef`: Perfect! Persists across renders, unique per component instance, no
+  re-renders on mutation
+
+Common use cases: storing previous values, keeping timers/intervals, storing DOM
+references, maintaining WebSocket connections, caching expensive objects
+
+### Q4: Premature Optimization with Hooks
+
+Every `useCallback` and `useMemo` has a cost: React must check dependencies on
+every render.
+
+**When optimization backfires:**
+
+- Wrapping cheap computations (reference checks are faster than memoization)
+- Creating new dependency arrays on each render defeats the purpose
+- The optimized child component doesn't use `React.memo` (so it re-renders
+  anyway)
+- Dependencies change frequently anyway
+
+**Better approach:** Profile first, optimize later. Only memoize when:
+
+1. Child components are wrapped in `React.memo` or `PureComponent`
+2. Computing the value is genuinely expensive
+3. You're passing callbacks to optimized child components
+
+Remember: Readable code > Premature optimization
+
+### Q5: useEffect vs useLayoutEffect
+
+Use `useLayoutEffect` when you need to measure or mutate the DOM before the
+browser paints!
+
+**Timing difference:**
+
+- `useEffect`: Runs **after** the browser paints (asynchronous, non-blocking)
+- `useLayoutEffect`: Runs **before** the browser paints (synchronous, blocking)
+
+**When it matters:**
+
+If you use `useEffect` to measure a DOM element and then update state based on
+that measurement, users will see a "flash" as the screen paints twice (once with
+initial render, once after measurement).
+
+`useLayoutEffect` prevents this visual flicker by completing before paint.
+
+**Trade-off:** `useLayoutEffect` blocks painting, so it can hurt performance if
+the effect is slow. Use `useEffect` by default, `useLayoutEffect` only when
+visual consistency requires it.
+
+---
+
+Mastering these patterns separates React developers who can ship features from
+those who can ship rock-solid, performant applications. The hooks model is
+powerful but requires understanding JavaScript closures, React's render cycle,
+and when "optimizations" actually make things worse.
+
+Keep experimenting, profile your code, and always trust ESLint's
+`react-hooks/exhaustive-deps` rule—it's there to save you from subtle bugs!

@@ -88,10 +88,9 @@ For each answer:
 
 **Quality Markers**:
 - Answers should teach, not just validate
-- Include "CAUTION" or "WARNING" for common mistakes
-- Use lists to break down complex concepts
+- Use lists to enumerate multiple causes, factors, or specific examples (e.g., "Common Causes: Race conditions, time dependencies, shared state...")
 - Explain the "so what" - why this matters in practice
-- Avoid fluff - every sentence should add value
+- Avoid fluff - the quiz is a standalone blog post and should be highest quality writing where every sentence adds value
 
 ## Content Guidelines
 
@@ -106,47 +105,24 @@ For each answer:
 ### What Makes Great Answers
 
 1. **Challenge Assumptions**: Coverage ≠ Correctness
-2. **Reveal Non-Obvious Truths**: Benign refactoring can break tests
-3. **Provide Frameworks**: FIRST acronym for test design
-4. **Call Out AI Limitations**: "AIs may optimize for passing, not correctness"
-5. **Include Warnings**: Edge cases that catch people
+2. **Provide Frameworks**: FIRST acronym for test design
+3. **Call Out AI Limitations**: "AIs may optimize for passing, not correctness"
+4. **Reveal Non-Obvious Truths**: Edge cases that catch people
 
 ## Integration with Blog
 
-After generating the quiz:
+**File Location**: Create the MDX file at `blog/software-development/pop-quiz-{topic-slug}.mdx`
+- Slug: Lowercase, hyphenated (e.g., `pop-quiz-software-testing`)
 
-1. **Create the MDX file**:
-   - Location: `blog/software-development/pop-quiz-{topic-slug}.mdx`
-   - Slug: Lowercase, hyphenated (e.g., `pop-quiz-software-testing`)
-
-2. **Add Update entry to topic index**:
-   - File: `blog/software-development/all-posts.mdx`
-   - Place at the top (newest first)
-
-3. **Add Update entry to quarterly index**:
-   - File: `blog/all-posts/2025-qN.mdx` (current quarter)
-   - Place at the top (newest first)
-
-**Update Entry Format**:
-```
-<Update label="[Month Day, Year]">
-**[Pop Quiz: {Topic}](/blog/software-development/pop-quiz-{topic-slug})**
-
-[1-2 sentence description highlighting key concepts covered]
-
-</Update>
-```
-
-## Metadata Requirements
-
-Every pop quiz MDX file needs frontmatter:
-
+**Metadata**: Include frontmatter with title and description:
 ```yaml
 ---
 title: 'Pop Quiz: {Topic Name}'
 description: 'A pop quiz exploring {topic} concepts including {concept 1}, {concept 2}, {concept 3}, and {concept N}'
 ---
 ```
+
+**Update Entries**: Follow the process in CLAUDE.md for adding Update entries to both topic and quarterly all-posts files
 
 ## Example Workflow
 
@@ -160,32 +136,3 @@ description: 'A pop quiz exploring {topic} concepts including {concept 1}, {conc
 5. Create MDX file: `blog/software-development/pop-quiz-software-testing.mdx`
 6. Add Update entries to both all-posts files
 7. Commit with descriptive message
-
-## Validation Checklist
-
-Before finalizing:
-
-- [ ] Questions test practical understanding, not definitions
-- [ ] Each question has a helpful hint in parentheses
-- [ ] Answers go beyond "correct" to explain WHY it matters
-- [ ] Content assumes technical competence (no obvious facts)
-- [ ] At least one "CAUTION" or counterintuitive insight
-- [ ] Actionable takeaway or framework provided
-- [ ] Frontmatter includes title and description
-- [ ] Update entries added to both all-posts files
-- [ ] File uses .mdx extension
-
-## Advanced Topics to Consider
-
-Pop quizzes work well for:
-- Testing strategies and philosophies
-- Distributed systems gotchas
-- Performance optimization trade-offs
-- Security vulnerabilities and defenses
-- Database design decisions
-- API design principles
-- Code review practices
-- Debugging techniques
-- Architecture patterns
-
-Focus on topics where experienced engineers still have gaps or misconceptions.

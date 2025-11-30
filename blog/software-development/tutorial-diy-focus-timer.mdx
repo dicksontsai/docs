@@ -1,0 +1,37 @@
+---
+title: 'Tutorial: DIY Website-Blocking Focus Timer on MacOS'
+description: 'Published December 7, 2020'
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/kCo9DAuLGX4"
+  title="DIY Website Blocking Focus Timer on MacOS"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+Enhance your productivity with a website-blocking focus timer using just 30
+lines of Bash! Click "Read More" to access the Youtube video, explanation, and
+source code.
+
+---
+
+There are tons of websites already that cover how to block websites on MacOS
+using the
+[/etc/hosts](https://tldp.org/LDP/solrhe/Securing-Optimizing-Linux-RH-Edition-v1.3/chap9sec95.html)
+file.
+
+The key insight here is that **you can treat /etc/hosts like any other file**.
+You can copy it, write another file's contents into it, etc. using the familiar
+Bash commands cp, mv, etc.
+
+In this script, we use Bash to write additional websites to /etc/hosts, set a
+timer, and then revert /etc/hosts back to its original contents.
+
+USE THIS SOLUTION AT YOUR OWN RISK. Exercise to the reader: can you think of one
+thing that a malicious person target in this script? Consider always checking
+the content of your files before you use sudo.
+
+Source code:
+https://gist.github.com/dicksontsai/cce96aeebe7c909ee794e42b88ca2c74

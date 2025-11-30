@@ -62,5 +62,10 @@
       "linkedin": "https://www.linkedin.com/in/dickson-tsai-10840a64/",
       "github": "https://github.com/dicksontsai"
     }
+  },
+  "seo": {
+    "metatags": {
+      "canonical": "https://www.dicksontsai.com"
+    }
   }
 }

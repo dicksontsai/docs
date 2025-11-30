@@ -1,0 +1,295 @@
+---
+title: 'Claude Code Explorations: Custom Google Drive Script'
+description: 'Published May 3, 2025'
+---
+
+<img
+  src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgnuNI1QgcbbR11-t-Qf6WuHSFt4wW77453pAz_EBf76q1SH7HK7E_x5KABUkLf2ZMeOreaJjzIWAkUm6qh9ME2Lv581ZWJUaiRZfMKr6tOCdU8P49sYGv9EUvTlQKH8l9wfTP5moFfr4zfk2rU39ajNEiBVHl5rJ7fZHPU16ka-fWI61LPjTgyoxg_Gj0/w640-h176/claude_code_custom_script_demo.png"
+  alt="Screenshot of Claude Code with my custom Google Drive script"
+/>
+
+[Claude Code](https://claude.com/product/claude-code) brings the power of Claude
+AI directly into your terminal. Now that
+[Claude Max and Pro plans](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
+include Claude Code usage (as of May 1, 2025), you gain access to this powerful
+assistant without direct API cost concerns (within plan limits).
+
+While the [claude.ai](https://claude.ai) web app is great for conversations,
+Claude Code shines by allowing you to extend its capabilities with custom
+scripts tailored to your specific workflows. This blog post explores how to
+configure Claude Code to recognize and run your own scripts, using Google Drive
+integration as an example.
+
+## Disclaimer
+
+<Warning>
+  This is an unofficial blog post (my personal blog) and is not endorsed by
+  Anthropic or Claude Code. It is only meant to explore how far anyone can take
+  Claude Code.
+</Warning>
+
+- **USE THIS DISCUSSION AT YOUR OWN RISK**.
+- **NEVER** run code without reviewing every single line.
+- There may be multiple ways to achieve the same goal. (e.g. MCP, which I will
+  cover in another post.) What's discussed here is just one way, not the only
+  way or best way.
+- What's discussed here may not be kept up-to-date
+
+## Why This Matters: The Power of Custom Scripts
+
+Claude Code isn't limited to built-in commands. You can create scripts for
+almost any task – interacting with APIs, managing files, automating builds,
+querying databases – and make them easily callable by Claude.
+
+This guide uses Google Drive integration as an example, but the principles apply
+to any custom script you want Claude Code to use.
+
+## Saving Your Scripts to Claude Code's Memory
+
+Make Claude Code aware of your scripts by mentioning them in the
+`~/.claude/CLAUDE.md` configuration file, the
+["User memory"](https://code.claude.com/docs/en/memory#determine-memory-type)
+that Claude Code includes in its context when launched.
+
+For example, you can list the scripts with the following JSON schema:
+
+- `alias`: The command name Claude will use (conventionally prefixed with
+  ccode-).
+- `path`: The actual executable script name or path that the alias points to.
+- `desc`: A description of what the script does (Claude uses this to understand
+  its purpose).
+- `params`: A string describing the expected command-line arguments.
+
+**Example Entries (for our Google Drive example):**
+
+```json
+{"alias": "ccode-md2gdoc", "path": "ccode-md2gdoc", "desc": "Convert local
+markdown file to Google Doc using Google Drive API.", "params": "markdown_file
+[--title TITLE] [--folder FOLDER_ID]"}
+{"alias": "ccode-gdrive-list", "path": "ccode-gdrive-list", "desc": "List Google
+Drive folders and their IDs (e.g., useful for finding a FOLDER_ID for
+ccode-md2gdoc).", "params": "[--depth DEPTH] [--folder FOLDER_ID]"}
+```
+
+Once defined here, Claude can understand requests like "List my Drive folders"
+or "Convert report.md to a Google Doc" and map them to executing
+`ccode-gdrive-list` or `ccode-md2gdoc` respectively.
+
+## Setting Up Custom Script Aliases
+
+To make your scripts executable via the aliases defined in `CLAUDE.md`, they
+need to be:
+
+- Located somewhere on your system.
+- Made executable.
+- Accessible via your system's `PATH`, often through symbolic links in a
+  dedicated `bin` directory.
+
+### Example Project Structure:
+
+A common pattern is to organize tools like this:
+
+```
+~/claude-code-tools/
+├── bin/ # Directory for executable links (added to PATH)
+│ ├── ccode-md2gdoc # Symlink to the actual script
+│ └── ccode-gdrive-list # Another symlink
+└── tools/
+    └── gdrive/     # Directory for the actual script code
+        ├── md_to_gdoc.py
+        └── gdrive_list.py
+```
+
+## Adding New Commands to the Project
+
+Here's how you can get Claude Code to set up a `ccode-md2gdoc` command, assuming
+the Python script `md_to_gdoc.py` exists in `~/claude-code-tools/tools/gdrive/`
+and the structure above is desired:
+
+1. Ensure Directories Exist:
+   ```bash
+   mkdir -p ~/claude-code-tools/bin
+   mkdir -p ~/claude-code-tools/tools/gdrive
+   ```
+2. Make the Script Executable:
+   ```bash
+   chmod +x ~/claude-code-tools/tools/gdrive/md_to_gdoc.py
+   ```
+3. Create the Symbolic Link:
+
+   This creates the ccode-md2gdoc command linked to the script.
+
+   ```bash
+   ln -sfn ../tools/gdrive/md_to_gdoc.py ~/claude-code-tools/bin/ccode-md2gdoc
+   ```
+
+4. Ensure `bin` is in `PATH`:
+
+   The agent checks if `$HOME/claude-code-tools/bin` is in the `PATH`
+   environment variable. If not, it adds it to the appropriate shell
+   configuration file (e.g., `~/.zshrc` or `~/.bashrc`):
+
+   ```bash
+   # (Conceptual check: if $HOME/claude-code-tools/bin not in $PATH)
+
+   echo 'export PATH="$HOME/claude-code-tools/bin:$PATH"' >> ~/.zshrc # Or
+   ~/.bashrc
+
+   # (Agent might then suggest sourcing the file or restarting the shell)
+   ```
+
+5. Install Dependencies:
+
+   The agent identifies and installs necessary libraries for the script.
+
+   ```bash
+   pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+   markdown argparse
+   ```
+
+_Repeat this process for other custom scripts like `ccode-gdrive-list`_.
+
+## Creating Custom Scripts (Example: Google Drive Tools)
+
+Now, let's look at the actual scripts we're making available. In this example,
+we have two Python scripts for Google Drive interaction.
+
+### The Scripts
+
+1. `gdrive_list.py`: Connects to the Google Drive API to list folders and their
+   IDs. Useful for finding where to save a file.
+2. `md_to_gdoc.py`: Takes a local Markdown file, uploads it to Google Drive, and
+   uses the API to convert it into a Google Doc, optionally placing it in a
+   specific folder.
+
+### Key Libraries Required (for this example)
+
+1. `google-api-python-client`, `google-auth-httplib2`, `google-auth-oauthlib`:
+   For Google API interaction and authentication.
+2. `argparse`: For handling command-line arguments.
+3. `markdown`: For preprocessing markdown if needed.
+
+### Code Snippet
+
+Here, I'll provide a small excerpt of what my code looks like. You can have
+Claude Code generate your own script.
+
+```python
+    # Build the Drive API client
+    drive_service = build('drive', 'v3', credentials=creds)
+
+    # Prepare file metadata
+    file_metadata = {
+        'name': title,
+        'mimeType': 'application/vnd.google-apps.document' # Request conversion to Google Doc format
+    }
+
+    # If a folder ID is specified, add it as a parent
+    if folder_id and folder_id != 'root':
+        file_metadata['parents'] = [folder_id]
+
+    # Prepare the media upload
+    media = MediaFileUpload(markdown_file_path,
+                            mimetype='text/markdown', # Specify the source format
+                            resumable=True)
+
+    # Create the file on Google Drive, triggering the conversion
+    file = drive_service.files().create(
+        body=file_metadata,
+        media_body=media,
+        fields='id, name, webViewLink' # Get fields needed for output message
+    ).execute()
+```
+
+Dependencies for your custom scripts will vary based on what they do.
+
+## Handling Script-Specific Prerequisites (Example: Google API Setup)
+
+Some scripts have unique setup needs. Our Google Drive example requires
+additional Google Cloud credential setup.
+
+### Step 1: Create a Google Cloud Project
+
+1. Go to the Google Cloud Console.
+2. Create a new project (e.g., "Claude Drive Tools").
+
+### Step 2: Enable Google Drive & Docs APIs
+
+1. In your project, go to "APIs & Services" > "Library".
+2. Search for and enable both "Google Drive API" and "Google Docs API".
+
+### Step 3: Create OAuth Credentials
+
+1. Go to "APIs & Services" > "Credentials".
+2. Create an "OAuth client ID".
+3. Configure the consent screen (External user type, app name, emails). You can
+   skip scopes and add your email as a test user.
+4. Create the OAuth client ID again, this time selecting "Desktop app".
+
+### Step 4: Download `credentials.json`
+
+1. Download the JSON credentials file for the Desktop app client ID.
+2. Save it as `credentials.json` in a location the scripts can access (e.g.,
+   `~/claude-code-tools/tools/python/`).
+
+<Warning>
+  Keep `credentials.json` secure. The first time a script runs, it will trigger
+  a browser-based authorization flow, creating a `token.json` for future use.
+</Warning>
+
+## Using Your Custom Scripts
+
+Once configured in `CLAUDE.md` and set up in your environment, you can invoke
+the scripts via their aliases directly in your terminal or when interacting with
+Claude Code.
+
+### Example Usage (Google Drive):
+
+1. List folders:
+
+   ```bash
+   ccode-gdrive-list --depth 2
+   ```
+
+2. Convert markdown: (Get `FOLDER_ID` from the list command)
+
+   ```bash
+   ccode-md2gdoc report.md --title "Project Report Q1" --folder YOUR_FOLDER_ID
+   ```
+
+### Example Usage (Claude Code):
+
+> Let's create an initial draft of a blog post to describe how we can extend
+> Claude Code to work on Google Drive documents by setting up these scripts,
+> based on what I have in this repository. You can write the md file locally
+> first, iterate on it, then upload to Google Drive in the appropriate
+> destination.
+
+## Security Considerations
+
+- **Review Code**: Always understand any script before configuring Claude Code
+  to use it, especially if it accesses sensitive data or APIs.
+- **Protect Credentials**: Secure API keys, tokens (`token.json`), and
+  credential files (`credentials.json`). Use `.gitignore`.
+- **Scope Permissions**: Be mindful of the permissions granted during
+  authorization flows (like the Google OAuth flow).
+
+## Extending Further
+
+The possibilities are vast. You could have Claude Code use custom scripts to:
+
+- **Manage Media**: Create scripts to organize photos, convert video formats, or
+  batch rename media files.
+- **Track Finances**: Build tools to analyze bank statements, categorize
+  expenses, or track budget progress.
+- **Health Monitoring**: Develop scripts to log and visualize workout data, meal
+  planning, or sleep patterns.
+- **Home Automation**: Create integrations with smart home devices, schedule
+  tasks, or monitor energy usage.
+- **Learning Tools**: Build flashcard generators, language practice tools, or
+  study schedule reminders.
+- **Social Media**: Create tools to download content, schedule posts, or analyze
+  engagement metrics.
+
+By combining custom scripts with Claude Code's intelligence, you can build a
+highly efficient and personalized terminal assistant.

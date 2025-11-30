@@ -19,7 +19,7 @@
         "groups": [
           {
             "group": "Latest",
-            "pages": ["blog/all-posts/2025-q2"]
+            "pages": ["blog/all-posts/2025"]
           },
           {
             "group": "AI Coding",
@@ -44,7 +44,7 @@
           {
             "group": "By Date",
             "icon": "calendar",
-            "pages": ["blog/all-posts/2025-q2"]
+            "pages": ["blog/all-posts/2025", "blog/all-posts/pre-2025"]
           }
         ]
       }

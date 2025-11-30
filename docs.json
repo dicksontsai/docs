@@ -16,11 +16,11 @@
       },
       {
         "tab": "Blog",
-        "pages": ["blog/all-posts/2025-q2"]
-      },
-      {
-        "tab": "By Topic",
         "groups": [
+          {
+            "group": "Latest",
+            "pages": ["blog/all-posts/2025-q2"]
+          },
           {
             "group": "AI Coding",
             "icon": "robot",
@@ -40,6 +40,11 @@
             "group": "Fun",
             "icon": "gamepad",
             "pages": ["blog/fun/all-posts"]
+          },
+          {
+            "group": "By Date",
+            "icon": "calendar",
+            "pages": ["blog/all-posts/2025-q2"]
           }
         ]
       }

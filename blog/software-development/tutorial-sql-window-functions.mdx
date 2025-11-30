@@ -1,0 +1,386 @@
+---
+title: 'Tutorial: SQL Window Functions'
+description: 'Published November 25, 2020'
+---
+
+<iframe
+  className="w-full aspect-video rounded-xl"
+  src="https://www.youtube.com/embed/Sej0pYouvTs"
+  title="SQL Window Functions: Tutorial and Examples"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+></iframe>
+
+In SQL, **window functions** compute a value for each row of input based on
+other rows, collectively known as a "window". The window is defined using `OVER`
+and can be refined using `PARTITION BY`, `ORDER BY`, and `ROWS`/`RANGE BETWEEN`.
+The value can be from a numbering function, navigational function, or an
+aggregate analytic function.
+
+To learn more, check out my Youtube video. For a text reference, BigQuery's
+article
+["Window function calls"](https://docs.cloud.google.com/bigquery/docs/reference/standard-sql/window-function-calls)
+is a great resource. Below, you can find the text referenced in the Youtube
+video, as well as some bonus content not in the video.
+
+---
+
+**Types of window functions** (naming comes from the BigQuery article):
+
+- **Numbering functions** - assign a number to the given row relative to other
+  rows in the partition. e.g. `RANK()`, `ROW_NUMBER()`, `DENSE_RANK()`.
+- **Navigational functions** - locate a row relative to the given row. e.g.
+  `LEAD(other row's column)`, `LAG`, `FIRST_VALUE`, `LAST_VALUE`.
+- **Aggregate analytic functions** - aggregate on the given row's window. e.g.
+  `SUM()`, `COUNT()`.
+
+**Window keywords:**
+
+- `OVER` - run the function over a window defined as:
+  - `PARTITION BY` - divide the input into sets of related rows based on shared
+    column value(s). Only include neighbors of the given row's set in the
+    window.
+  - `ORDER BY` - order the rows in the set.
+  - `ROWS`/`RANGE BETWEEN` - adjust the size of the window.
+    - `UNBOUNDED` - go to the very beginning/end
+    - `PRECEDING` - before the given row
+    - `FOLLOWING` - after the given row
+    - `ROWS` - number of rows
+    - `RANGE` - amount from the column listed in `ORDER BY`
+
+---
+
+## Youtube Text Companion
+
+To run the queries for yourself, see "Testing Setup" below.
+
+### Base Table
+
+For the following examples, we will use this table. I've provided the
+corresponding SQL code below.
+
+| Name   | Age Bucket | Weight |
+| ------ | ---------- | ------ |
+| Alex   | Adult      | 190    |
+| Brooke | Adult      | 132    |
+| Casey  | Child      | 87     |
+| Danny  | Child      | 55     |
+| Ellen  | Child      | 32     |
+| Fanny  | Child      | 55     |
+
+```sql
+CREATE TEMP TABLE Weights AS
+  SELECT 'Alex' AS name, 'adult' AS age_bucket, 'boy' AS gender, 190 AS weight
+  UNION ALL SELECT 'Brooke', 'adult', 'girl', 132
+  UNION ALL SELECT 'Casey', 'child', 'boy', 87
+  UNION ALL SELECT 'Danny', 'child', 'girl', 55
+  UNION ALL SELECT 'Ellen', 'child', 'boy', 32
+  UNION ALL SELECT 'Fanny', 'child', 'boy', 55;
+```
+
+### Example 1: Numbering Functions (Rank)
+
+**Numbering functions** assign a number to each row within its partition.
+
+In the example below, we partition the input into two sets ("Adult" rows and
+"Child" rows), then order the rows by weight within each set. Finally, we call
+the numbering function on each row, informed by the window the row belongs to.
+
+`RANK()` skips numbers if there are ties. `DENSE_RANK()` does not.
+`ROW_NUMBER()` simply assigns a number to each row in ascending order regardless
+of ties.
+
+Window sizing keywords (`ROWS`/`RANGE BETWEEN`) cannot be used for numbering
+functions.
+
+A window function call can be treated as a value. You can give it an alias.
+After `FROM`, you can `ORDER BY` and `LIMIT` the resulting rows.
+
+| Name   | Age Bucket | Weight | `RANK()` | `ROW_NUMBER()` | `DENSE_RANK()` |
+| ------ | ---------- | ------ | -------- | -------------- | -------------- |
+| Alex   | Adult      | 190    | 1        | 1              | 1              |
+| Brooke | Adult      | 132    | 2        | 2              | 2              |
+| Casey  | Child      | 87     | 1        | 1              | 1              |
+| Danny  | Child      | 55     | 2        | 2              | 2              |
+| Ellen  | Child      | 32     | 4        | 4              | 3              |
+| Fanny  | Child      | 55     | 2        | 3              | 2              |
+
+```sql
+SELECT
+  *,
+  RANK() OVER (PARTITION BY age_bucket ORDER BY weight DESC),
+  ROW_NUMBER() OVER (PARTITION BY age_bucket ORDER BY weight DESC),
+  DENSE_RANK() OVER (PARTITION BY age_bucket ORDER BY weight DESC)
+FROM Weights
+ORDER BY name;
+```
+
+### Example 2: Aggregate Analytic Functions (Cumulative Sum)
+
+A cumulative sum at each row is the row's weight and the previous rows. After
+partitioning by age bucket, we can express this "cumulative" property by
+defining a window from the start to the current row, then computing the sum.
+
+Note how we order by weight descending before applying `SUM()` on the window.
+Casey is first at 87. Danny's window includes Casey and Danny himself, so
+`SUM(Casey, Danny)` is 87+55. Ellen is last, so the sum of Ellen's window is
+87+55+55+32.
+
+| Name   | Age Bucket | Weight | Cumulative Sum |
+| ------ | ---------- | ------ | -------------- |
+| Alex   | Adult      | 190    | 190            |
+| Brooke | Adult      | 132    | 322            |
+| Casey  | Child      | 87     | 87             |
+| Danny  | Child      | 55     | 142            |
+| Ellen  | Child      | 32     | 229            |
+| Fanny  | Child      | 55     | 197            |
+
+```sql
+SELECT
+  *,
+  SUM(weight) OVER (
+    PARTITION BY age_bucket
+    ORDER BY weight DESC
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  )
+FROM Weights;
+```
+
+Alternatively, you can write `ROWS UNBOUNDED PRECEDING`, which is shorthand for
+`ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`.
+
+```sql
+SELECT
+  *,
+  SUM(weight) OVER (
+    PARTITION BY age_bucket
+    ORDER BY weight DESC
+    ROWS UNBOUNDED PRECEDING
+  )
+FROM Weights;
+```
+
+### Example 3: Rows Between (Moving Average)
+
+Here, we explore `ROWS BETWEEN` further. Also note that `PARTITION BY` is
+optional if you don't want to split your input into separate sets. Imagine the
+pain of using joins and group by to get the same information!
+
+| Name   | Age Bucket | Weight | Moving Average (No Partition) |
+| ------ | ---------- | ------ | ----------------------------- |
+| Alex   | Adult      | 190    | 161                           |
+| Brooke | Adult      | 132    | 136.3                         |
+| Casey  | Child      | 87     | 91.3                          |
+| Danny  | Child      | 55     | 58                            |
+| Ellen  | Child      | 32     | 47.3                          |
+| Fanny  | Child      | 55     | 43.5                          |
+
+```sql
+SELECT
+  *,
+  AVG(weight) OVER (
+    ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING
+  )
+FROM Weights;
+```
+
+### Example 4: Range Between
+
+Instead of counting physical rows, you can define a window by a particular
+numeric value using `RANGE BETWEEN`. Danny's window is [55-30, 55+25] = [25,
+80]. Ellen and Fanny are in that window.
+
+| Name   | Age Bucket | Weight | # within 30 |
+| ------ | ---------- | ------ | ----------- |
+| Alex   | Adult      | 190    | 1           |
+| Brooke | Adult      | 132    | 1           |
+| Casey  | Child      | 87     | 1           |
+| Danny  | Child      | 55     | 3           |
+| Ellen  | Child      | 32     | 3           |
+| Fanny  | Child      | 55     | 3           |
+
+```sql
+SELECT
+  *,
+  COUNT(1) OVER (
+    PARTITION BY age_bucket
+    ORDER BY weight
+    RANGE BETWEEN 30 PRECEDING AND 25 FOLLOWING
+  )
+FROM Weights;
+```
+
+### Example 5: Navigation Function (Lead)
+
+What if you want to examine the value of a particular neighbor in a row's
+window? That's where navigation functions come in. The four basic ones are
+`FIRST_VALUE`, `LAST_VALUE`, `LEAD`, and `LAG`. These functions require you to
+provide `ORDER BY`.
+
+In this example, we partition by age bucket and order each set by weight
+ascending and choose `LEAD`. `LEAD` gives you the next row in the window. After
+you call lead, you should provide the column to extract from that row. We
+extract name here.
+
+The order of the adult set is [Brooke: 132, Alex: 190]. Brooke's lead is Alex.
+Alex does not have a lead, because Alex is ordered last in the set.
+
+| Name   | Age Bucket | Weight | Heavier in Age Bucket |
+| ------ | ---------- | ------ | --------------------- |
+| Alex   | Adult      | 190    | ---                   |
+| Brooke | Adult      | 132    | Alex                  |
+| Casey  | Child      | 87     | ---                   |
+| Danny  | Child      | 55     | Fanny                 |
+| Ellen  | Child      | 32     | Danny                 |
+| Fanny  | Child      | 55     | Casey                 |
+
+```sql
+SELECT
+  *,
+  LEAD(name) OVER (
+    PARTITION BY age_bucket
+    ORDER BY weight
+  )
+FROM Weights;
+```
+
+## Bonus Content (not in video)
+
+### Window Functions vs. Group By
+
+`GROUP BY` defines groups, then computes functions on those groups. The end
+result is one row per group.
+
+On the other hand, analytic functions compute a value for each individual row in
+the input. Of course, analytic functions are more meaningful when you define a
+window.
+
+```sql
+SELECT
+  age_bucket,
+  SUM(weight)
+FROM Weights
+GROUP BY 1;
+```
+
+| Age Bucket | Weight |
+| ---------- | ------ |
+| Adult      | 322    |
+| Child      | 229    |
+
+```sql
+SELECT
+  name,
+  age_bucket,
+  SUM(weight) OVER (PARTITION BY age_bucket) AS total
+FROM Weights;
+```
+
+| Name   | Age Bucket | Total |
+| ------ | ---------- | ----- |
+| Alex   | Adult      | 322   |
+| Brooke | Adult      | 322   |
+| Casey  | Child      | 229   |
+| Danny  | Child      | 229   |
+| Ellen  | Child      | 229   |
+| Fanny  | Child      | 229   |
+
+### Window Functions and the WHERE Clause
+
+`WHERE` applies before analytic functions are computed.
+
+Compare the following:
+
+```sql
+SELECT
+  name,
+  age_bucket,
+  SUM(weight) OVER (PARTITION BY age_bucket) AS total
+FROM Weights;
+```
+
+| Name   | Age Bucket | Total |
+| ------ | ---------- | ----- |
+| Alex   | Adult      | 322   |
+| Brooke | Adult      | 322   |
+| Casey  | Child      | 229   |
+| Danny  | Child      | 229   |
+| Ellen  | Child      | 229   |
+| Fanny  | Child      | 229   |
+
+```sql
+SELECT
+  name,
+  age_bucket,
+  SUM(weight) OVER (PARTITION BY age_bucket) AS total
+FROM Weights
+WHERE name LIKE '%y';
+```
+
+| Name  | Age Bucket | Total |
+| ----- | ---------- | ----- |
+| Casey | Child      | 197   |
+| Danny | Child      | 197   |
+| Fanny | Child      | 197   |
+
+### Window Functions and Subqueries
+
+Window functions can be called with a `FROM` clause that is a subquery. We can
+rewrite the query in the previous section as:
+
+```sql
+SELECT
+  name,
+  age_bucket,
+  SUM(weight) OVER (PARTITION BY age_bucket) AS total
+FROM (
+  SELECT *
+  FROM Weights
+  WHERE name LIKE '%y'
+);
+```
+
+| Name  | Age Bucket | Total |
+| ----- | ---------- | ----- |
+| Casey | Child      | 197   |
+| Danny | Child      | 197   |
+| Fanny | Child      | 197   |
+
+### Real-World Application: CTR Below Your Feature
+
+Let's say you're the head editor at Best News Corp. Your website is a simple
+list of stories, and you want to see how well your fashion stories are
+performing relative to other stories. One useful measure is to see whether users
+click on anything below the highest fashion story on the page.
+
+```sql
+SELECT
+  category,
+  RANK() OVER (PARTITION BY category ORDER BY position) AS category_rank,
+  SUM(interaction) OVER (
+    ORDER BY position
+    ROWS BETWEEN 1 FOLLOWING AND UNBOUNDED FOLLOWING
+  ) > 0 AS clickedSomethingBelow
+FROM page_views
+WHERE
+  category = 'Fashion'
+  AND category_rank = 1;
+```
+
+## Conclusion
+
+Thank you for making it this far. Again, there are many great write-ups of SQL
+analytic functions elsewhere, but these examples should help you understand them
+better. See you in the next tutorial!
+
+## Testing Setup
+
+I use Google Cloud's [BigQuery](https://console.cloud.google.com/bigquery) to
+run SQL queries. BigQuery offers some public datasets, but you can also load
+hardcoded tables, such as the example below, and execute queries on them for
+free.
+
+<img
+  src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgCeNMN56P1h1OjD98qCNHnFvIVoVfWAVky_xVtKAKHte3w1Hxu4XRqOZyylcbiDcJEhA3N-Jq_C_UWhF5DdNrRw2DcF1VxYPW_2ZgzG5uUMgxA-4ir4N176biLii288xQ-ZPrgAWrvG78/s16000/Screen+Shot+2020-11-24+at+11.08.02+PM.png"
+  alt="Screenshot of BigQuery UI"
+/>

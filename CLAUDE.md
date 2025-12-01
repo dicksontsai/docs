@@ -76,7 +76,51 @@ the date-based and topic all-posts files which contain the Update entries.
 - Cross-reference other blog posts when relevant using relative links (e.g.,
   `/blog/learning-and-teaching/typing-z-a`)
 
-## Process
+**Titles:**
+
+- Spend real effort on titles - don't settle for the first idea
+- Capture the *interesting* angle, not just the topic
+- Example iteration:
+  1. "The Hardest Part of Senior Engineering Isn't Technical" - too vague
+  2. "Effective Engineers Master Parallel Work" - "parallel" implies xfn,
+     "engineer" is too narrow
+  3. "Kick Off Cross-Functional Dependencies Early" - underplays the interesting
+     part (we know this, but don't do it)
+  4. "Why 'Just Start Building' Ships Late" - captures the psychology and the
+     consequence
+
+**Accuracy and Precision:**
+
+- Verify citations with web search before attributing quotes or ideas to authors
+- Replace examples that have become dated (e.g., "localization" is now largely
+  automated by LLMs. Use "security review" instead.)
+- Be precise in the subject of your claims to avoid controversy.
+  - Example: Frame comparisons around behavior/mindset, not experience level (since it's debatable that all new engineers make the same mistake)
+  - Before: "The new engineer builds for five weeks..."
+  - After: "The 'just build' engineer codes for five weeks..."
+- Avoid vague phrases - elaborate concretely
+  - Before: "...the rules change."
+  - After: "...that's when to pause and ask: what are the long poles I can kick
+    off today?"
+
+**Anticipating Objections:**
+
+- Proactively address likely rebuttals (e.g., "but what about X?")
+- Scope the advice clearly (e.g., "this applies when you already know what
+  you're building")
+
+**Grammar and Flow:**
+
+- Be precise about tense
+  - Before: "the concept is validated, the prototype worked"
+  - After: "the prototype worked, the concept is validated"
+  - Before: "you need to know what you need before you need it"
+  - After: "you need to know what you'll need before you need it"
+- Ensure transitions make sense - don't reference something before explaining it
+  - Before: "The distinction matters. There's a difference between:"
+  - After: "Kicking off dependencies isn't the same as inviting opinions:"
+
+## Writing Process
 
 - You do not need to write the first draft perfectly. Maybe even start with more and then iteratively cut down
 - Launch subagents to evaluate certain dimensions of your work. For example, you can launch a Haiku agent to do a basic coherence check. You can launch an Opus agent to evaluate how informative, insightful, and creative the content is.

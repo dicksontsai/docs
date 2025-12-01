@@ -124,3 +124,8 @@ the date-based and topic all-posts files which contain the Update entries.
 
 - You do not need to write the first draft perfectly. Maybe even start with more and then iteratively cut down
 - Launch subagents to evaluate certain dimensions of your work. For example, you can launch a Haiku agent to do a basic coherence check. You can launch an Opus agent to evaluate how informative, insightful, and creative the content is.
+
+# PRs
+
+- Look at the diff using `git diff origin/main...HEAD`.
+- For new blog posts, mention the category, and slug. Then, mention any other changes unrelated to the blog post (e.g. workflow, CLAUDE.md) below. You don't need to rehash any of the content. You also do not need to include a test plan.

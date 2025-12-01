@@ -12,12 +12,10 @@ irresistible.
 This isn't a knowledge gap. It's a psychology gap. And closing it is a big part
 of what separates more effective engineers from less effective ones.
 
-(This post assumes you know roughly what you're building. If you're still in
-discovery mode — evaluating different solutions to a problem — "just build it"
-is often the right call. A quick prototype teaches you more than a month of
-planning. But there's a moment when that changes: the prototype worked, the
-concept is validated, and now you're committed to shipping. That's when to pause and
-ask: what are the long poles I can kick off today?)
+_A quick note on scope: This advice applies to "Execution Mode", not "Discovery
+Mode". If you're still prototyping to see if an idea is possible, by all means:
+just build it. But the moment you commit to shipping a production feature,
+that's when to pause and ask: what are the dependencies I can kick off today?_
 
 ## Product Work Is More Parallel Than It Feels
 
@@ -27,20 +25,38 @@ launch checklist_. This is intuitive. It's how we're taught to solve problems �
 one step at a time.
 
 But experienced engineers have learned, usually through painful experience, that
-product work is far more parallel than it appears. The legal review that
-takes three weeks? You can kick that off on day one, before you've written a
-line of code. The API you'll need from the platform team? Request it while
-you're still sketching the design. The security review? Get it in the queue
-while you're prototyping.
+product work is far more parallel than it appears. The legal review that takes
+three weeks? You can kick that off on day one, before you've written a line of
+code. The API you'll need from the platform team? Request it while you're still
+sketching the design. The security review? Get it in the queue while you're
+prototyping.
 
 The "just build" engineer codes for five weeks, then discovers a three-week
 dependency, and ships in eight. The dependency-aware engineer kicks it off on
 day one, builds in parallel, and ships in five. Same work, different sequencing,
 dramatically different outcome.
 
-Fred Brooks made a related observation in _The Mythical Man-Month_: the critical
-path is rarely where you think it is. The work that _feels_ like progress
-(writing code) often isn't what determines your ship date. The long poles are
+```mermaid
+gantt
+    title "Just Build" vs Dependency-Aware
+    dateFormat YYYY-MM-DD
+    axisFormat Week %W
+
+    section Just Build
+    Coding (5 weeks)            :a1, 2025-01-06, 35d
+    Dependency - blocked (3 wks) :crit, a2, after a1, 21d
+
+    section Dependency-Aware
+    Dependency (3 weeks)        :b1, 2025-01-06, 21d
+    Coding (5 weeks)            :b2, 2025-01-06, 35d
+```
+
+Fred Brooks touched on this in
+[_The Mythical Man-Month_](https://en.wikipedia.org/wiki/The_Mythical_Man-Month)
+with his rule of thumb that coding is only 1/6th of the schedule. Our intuition
+fails to account for the true critical path. We look at a project and see a
+straight line of implementation, ignoring the sequential chains of testing and
+system integration that actually determine the ship date. The long poles are
 usually external dependencies, reviews, and coordination — exactly the things
 that feel like "not real work."
 
@@ -55,7 +71,7 @@ team gives you... nothing. The payoff is weeks away, probabilistic, and
 invisible when it works (you simply _don't_ get blocked).
 
 **Action bias** is particularly strong in engineering culture. We valorize
-shipping. Hackers hack. The person who spends their first day "just sending
+shipping. Hackers hack. The engineer who spends their first day "just sending
 emails and scheduling meetings" feels like they're not doing real work, even
 when that's exactly the highest-leverage activity.
 
@@ -63,9 +79,9 @@ There's also what I'd call the **"should" tax**. Doing the right thing — filli
 out the kickoff template, scheduling the pre-launch review, writing up the
 rollout plan — often feels like obligation rather than genuine work. Research in
 [Self-Determination Theory](https://en.wikipedia.org/wiki/Self-determination_theory)
-(Deci & Ryan) shows that even self-imposed "shoulds" are more
-draining than intrinsically motivated action. The task isn't hard, but it
-carries psychological weight.
+(Deci & Ryan) shows that even self-imposed "shoulds" are more draining than
+intrinsically motivated action. The task isn't hard, but it carries
+psychological weight.
 
 And finally, there's **optimism bias**: _my project is simpler, I probably won't
 need all those sections in the template, we can figure out the rollback plan
@@ -73,9 +89,9 @@ later_. Optimism bias is particularly insidious because it actively discourages
 you from kicking off parallel dependencies — after all, you probably won't need
 them, right?
 
-## The Delegation Dimension
+## The Orchestration Dimension
 
-Delegation requires _lead time_.
+Orchestration requires _lead time_.
 
 If you're going to ask someone else to do part of the work, you need to know
 what you'll need before you need it. This sounds obvious, but it requires you to
@@ -88,15 +104,17 @@ size — the famous "adding people to a late project makes it later." But the fl
 side is that _well-orchestrated_ parallel work is genuinely faster. The skill is
 in the orchestration, not just the execution.
 
-This is also where _High Output Management_ by Andy Grove is illuminating. Grove
-argues that a manager's output is the output of their team. I'd extend this: a
-senior engineer's output is the output of all the parallel workstreams they've
-set in motion. The engineer who kicked off three dependencies on day one has a
-higher "output" than the one who wrote more code but is now blocked.
+This is also where
+[_High Output Management_](https://en.wikipedia.org/wiki/High_Output_Management)
+by Andy Grove is illuminating. Grove argues that a manager's output is the
+output of their team. I'd extend this: a senior engineer's output is the output
+of all the parallel workstreams they've set in motion. The engineer who kicked
+off three dependencies on day one has a higher "output" than the one who wrote
+more code but is now blocked.
 
 ## "But Won't This Add Too Many Cooks?"
 
-A reasonable objection: doesn't kicking off all these parallel workstreams mean
+A reasonable objection: Doesn't kicking off all these parallel workstreams mean
 more people involved, more opinions, more chaos?
 
 Kicking off dependencies isn't the same as inviting opinions:

@@ -1,0 +1,365 @@
+---
+title: 'Tutorial: tmux for AI-Assisted Development'
+description: 'Published December 4, 2025'
+---
+
+You're debugging a tricky race condition when you need to check whether your fix
+breaks any tests. In a typical setup, you'd lose your context: switch windows,
+wait for the test runner, then try to remember where you were. With tmux, Claude
+Code opens a new pane, runs `npm test`, and reports back while your debugging
+session stays untouched.
+
+This kind of parallel workflow is why tmux pairs so well with AI coding
+assistants. This tutorial covers the fundamentals and practical patterns for
+organizing your development sessions.
+
+---
+
+## Why tmux Works So Well with AI Coding Assistants
+
+Traditional IDEs control the UI through complex APIs, plugins, and extension
+systems. tmux takes a different approach: **everything is controlled through
+bash commands**.
+
+This matters for AI coding assistants because:
+
+1. **No context switching penalty.** Claude Code can run tests, start servers,
+   or check logs in separate panes without interrupting your current view.
+   Switching between views is just changing what text gets displayed.
+
+2. **Bash commands are the control interface.** Claude Code can run
+   `tmux split-window -h` to create a side-by-side view, or
+   `tmux select-window -t build` to switch context. The same interface you use
+   is the interface the agent uses.
+
+3. **Everything is scriptable.** Claude Code can set up your entire development
+   environment, create monitoring dashboards with multiple panes, or tear down
+   processes across windows, all through simple commands.
+
+4. **Sessions persist.** If your SSH connection drops or you close your
+   terminal, the tmux session keeps running. Long-running agent tasks survive
+   disconnects.
+
+## Core Concepts
+
+If you're new to tmux, here's what you need to know:
+
+- **Session**: A collection of windows. Think of it as a workspace for a
+  specific project or task.
+- **Window**: A full-screen view within a session. Like browser tabs.
+- **Pane**: A subdivision of a window. Split horizontally or vertically to see
+  multiple things at once.
+
+The hierarchy: `session > window > pane`
+
+## Getting Started
+
+Install tmux:
+
+```bash
+# macOS
+brew install tmux
+
+# Ubuntu/Debian
+sudo apt install tmux
+
+# Fedora
+sudo dnf install tmux
+```
+
+Start your first session:
+
+```bash
+tmux new-session -s myproject
+```
+
+You're now inside tmux. The green bar at the bottom confirms it.
+
+## Essential Commands
+
+tmux commands can be run from outside tmux (prefixed with `tmux`) or from inside
+using the prefix key (default: `Ctrl+b`) followed by a command key.
+
+### Session Management
+
+```bash
+# Create a new session
+tmux new-session -s sessionname
+
+# Create session with specific working directory
+tmux new-session -s sessionname -c ~/projects/myapp
+
+# List sessions
+tmux list-sessions
+
+# Attach to existing session
+tmux attach -t sessionname
+
+# Detach from current session (from inside tmux)
+# Press: Ctrl+b, then d
+
+# Kill a session
+tmux kill-session -t sessionname
+```
+
+### Window Management
+
+```bash
+# Create new window (from inside tmux)
+# Press: Ctrl+b, then c
+
+# Create window with specific name
+tmux new-window -n build
+
+# Switch to window by number
+# Press: Ctrl+b, then 0-9
+
+# Switch to window by name
+tmux select-window -t windowname
+
+# Rename current window
+tmux rename-window newname
+# Or press: Ctrl+b, then ,
+
+# List windows
+tmux list-windows
+```
+
+### Pane Management
+
+```bash
+# Split into top/bottom panes
+tmux split-window -v
+
+# Split into left/right panes
+tmux split-window -h
+
+# Navigate between panes
+# Press: Ctrl+b, then arrow keys
+
+# Close current pane
+# Press: Ctrl+d (or type 'exit')
+
+# Zoom current pane (toggle fullscreen)
+# Press: Ctrl+b, then z
+```
+
+<Note>
+The flag names are counterintuitive: `-v` creates a **v**ertical split line
+(resulting in top/bottom panes), while `-h` creates a **h**orizontal split line
+(resulting in left/right panes). Think about the direction of the dividing line,
+not the arrangement of the panes.
+</Note>
+
+## Patterns for AI-Assisted Development
+
+Now that you know the basics, here are patterns that are especially useful when
+working with Claude Code.
+
+### Pattern 1: Dedicated Windows for Different Tasks
+
+Create named windows so Claude Code can run processes without interrupting your
+current view:
+
+```bash
+# Start a session for your project
+tmux new-session -s myapp -c ~/projects/myapp
+
+# Create windows for different tasks
+tmux new-window -n server
+tmux new-window -n tests
+tmux new-window -n logs
+```
+
+With this setup, you can ask Claude Code to "start the dev server" and it will
+run:
+
+```bash
+tmux send-keys -t myapp:server 'npm run dev' Enter
+```
+
+The server starts in its own window. Your current view is unaffected.
+
+### Pattern 2: Running Tests Without Losing Context
+
+The most common use case: you're in the middle of editing when you want to check
+if your changes break anything.
+
+```bash
+# Claude Code can run tests in the background and capture output
+tmux send-keys -t myapp:tests 'npm test' Enter
+
+# Then check the results
+tmux capture-pane -t myapp:tests -p | grep -E "(PASS|FAIL|Error)"
+```
+
+Claude Code can then report "3 tests passing, 1 failing in auth.test.js" without
+you ever leaving your current context.
+
+### Pattern 3: Side-by-Side Code and Output
+
+When you do want to see output live, split the window:
+
+```bash
+# Create left/right panes
+tmux split-window -h
+
+# In the right pane, run your test watcher
+npm test -- --watch
+```
+
+You edit on the left, tests run on the right. Claude Code can work in either
+pane.
+
+### Pattern 4: Monitoring Multiple Services
+
+For microservices or multi-process applications, create a monitoring dashboard:
+
+```bash
+# Create a 4-pane layout
+tmux new-session -s monitor -d
+tmux split-window -h
+tmux split-window -v
+tmux select-pane -t 0
+tmux split-window -v
+
+# Start services in each pane
+tmux send-keys -t monitor:0.0 'docker logs -f api' Enter
+tmux send-keys -t monitor:0.1 'docker logs -f worker' Enter
+tmux send-keys -t monitor:0.2 'docker logs -f frontend' Enter
+tmux send-keys -t monitor:0.3 'htop' Enter
+```
+
+Claude Code can set this up for you, or you can create a script that does it.
+
+## Advanced: tmux + Git Worktrees
+
+Git worktrees let you check out multiple branches simultaneously in separate
+directories. Combined with tmux, you can work on multiple features without
+stashing, branch switching, or waiting for file changes.
+
+This is powerful when working with Claude Code on larger projects. You might
+have Claude Code working on a refactor in one session while you review a bug fix
+in another, each with its own running dev server and test watcher.
+
+### The Setup
+
+A worktree is just a separate checkout of your repo. Given a repository at
+`~/dev/myproject`, you can create a worktree for a feature branch:
+
+```bash
+cd ~/dev/myproject
+git worktree add ../myproject-feature feature/new-auth
+```
+
+Now `~/dev/myproject-feature` contains your feature branch. Each worktree is
+independent: different files, different `node_modules` (if you run install),
+different running processes.
+
+### Pairing Worktrees with tmux Sessions
+
+Create a tmux session for each worktree:
+
+```bash
+# Create the worktree
+git worktree add ../myproject-feature feature/new-auth
+
+# Create a tmux session for it
+tmux new-session -d -s feature -c ~/dev/myproject-feature
+
+# Set up windows
+tmux new-window -t feature -n server
+tmux new-window -t feature -n tests
+
+# Attach to start working
+tmux attach -t feature
+```
+
+### Switching Contexts
+
+With this setup, switching between feature branches is instant:
+
+```bash
+# Working on feature A in the 'feature' session
+tmux attach -t feature
+
+# Need to check main? Detach (Ctrl+b, d) then:
+tmux attach -t main
+```
+
+No stashing, no checkout delays. Each session has its own processes running.
+
+### Cleanup
+
+When you're done with a feature:
+
+```bash
+tmux kill-session -t feature
+git worktree remove ../myproject-feature
+```
+
+## Configuration Tips
+
+Create `~/.tmux.conf` to customize tmux:
+
+```bash
+# Use Ctrl+a instead of Ctrl+b (easier to reach)
+set -g prefix C-a
+unbind C-b
+bind C-a send-prefix
+
+# Start window numbering at 1
+set -g base-index 1
+
+# Enable mouse support
+set -g mouse on
+
+# Increase scrollback buffer
+set -g history-limit 10000
+
+# Split panes using | and -
+bind | split-window -h
+bind - split-window -v
+
+# Reload config with r
+bind r source-file ~/.tmux.conf \; display "Config reloaded!"
+```
+
+After creating or modifying this file:
+
+```bash
+# Reload configuration
+tmux source-file ~/.tmux.conf
+```
+
+## Quick Reference
+
+| Action                     | Command / Keybinding             |
+| -------------------------- | -------------------------------- |
+| New session                | `tmux new -s name`               |
+| List sessions              | `tmux ls`                        |
+| Attach to session          | `tmux attach -t name`            |
+| Detach                     | `Ctrl+b, d`                      |
+| New window                 | `Ctrl+b, c`                      |
+| Next/prev window           | `Ctrl+b, n` / `Ctrl+b, p`        |
+| Split top/bottom           | `Ctrl+b, "` or `tmux split-window -v` |
+| Split left/right           | `Ctrl+b, %` or `tmux split-window -h` |
+| Navigate panes             | `Ctrl+b, arrow keys`             |
+| Zoom pane                  | `Ctrl+b, z`                      |
+| Kill pane                  | `Ctrl+d` or `exit`               |
+| Rename window              | `Ctrl+b, ,`                      |
+
+## Next Steps
+
+Once you're comfortable with the basics:
+
+1. **Explore plugins**: [tmux Plugin Manager (tpm)](https://github.com/tmux-plugins/tpm)
+   adds features like session restore, better copy mode, and more.
+2. **Try session managers**: [tmuxinator](https://github.com/tmuxinator/tmuxinator)
+   lets you define layouts in YAML and spin them up with a single command.
+3. **Script your workflows**: Create shell functions that set up your project's
+   tmux environment automatically.
+
+The key insight: tmux's command-driven interface means Claude Code can organize
+your workspace as easily as it can edit files. That turns your terminal into a
+genuinely collaborative environment.

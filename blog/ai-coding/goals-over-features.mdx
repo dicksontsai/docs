@@ -1,0 +1,128 @@
+---
+title: 'Your AI Coding Setup Needs Goals, Not More Features'
+description: 'Published December 13, 2025'
+---
+
+MCP servers. Custom hooks. Skills. Subagents. The AI coding world moves fast,
+and there's always a shiny new feature promising to transform your workflow.
+It's tempting to dive in, configure everything, and build elaborate setups.
+
+But I've found that obsessing over these features often backfires. The more you
+chase, the more likely you are to end up frustrated, with an AI assistant that
+feels unreliable and bloated. The problem isn't the features themselves—it's
+starting with implementation instead of goals.
+
+---
+
+## The Feature Trap
+
+When a new capability drops, there's a pull to immediately integrate it. MCP
+servers that connect to your databases! Hooks that run before every command!
+Custom subagents for specialized tasks! Each sounds powerful. Each promises
+efficiency.
+
+But here's what often happens:
+
+**Context bloat.** Every feature you add is more information Claude has to
+process. More instructions in your `CLAUDE.md`. More tools available. More
+potential confusion about which approach to use when. Your prompts compete with
+your configuration for attention.
+
+**Trust erosion.** Complex setups have more failure modes. When your MCP server
+flakes out, or your hook produces unexpected output, or your custom subagent
+hallucinates in a domain it wasn't designed for—each failure chips away at your
+confidence in the whole system. You start second-guessing outputs. The
+experience becomes adversarial.
+
+**Configuration treadmill.** Features evolve. What worked last month needs
+updates this month. You spend time maintaining your setup instead of using it.
+The overhead starts to outweigh the benefits.
+
+## Step Back: What Are You Actually Trying to Achieve?
+
+Before reaching for the next feature, ask: what would make my AI coding
+experience genuinely better?
+
+I think most improvements fall into three categories:
+
+### 1. Self-Improvement
+
+Is Claude getting better at the specific things _you_ ask it to do?
+
+This isn't about Claude's base capabilities—that's Anthropic's job. This is
+about _your_ Claude, in _your_ context. Does it remember your preferences? Does
+it understand your codebase's patterns? Does it avoid mistakes it made before?
+
+### 2. Working Longer
+
+Can Claude sustain effectiveness over extended sessions?
+
+Context windows are large but not infinite. Long conversations accumulate
+cruft. The AI loses track of earlier decisions. Information gets contradicted.
+How do you help Claude stay coherent over hours, not just minutes?
+
+### 3. Capabilities
+
+Can Claude do things it couldn't do before?
+
+Access external systems. Understand domain-specific context. Perform complex
+multi-step workflows. Genuine capability expansion—not just reshuffling what's
+already possible.
+
+## Implementation Is Flexible
+
+Here's the liberating realization: **these goals can be achieved through many
+implementations, including boring ones.**
+
+You don't necessarily need MCP to give Claude access to external information.
+Sometimes a simple CLI script that dumps data to a file works just as well—and
+is easier to debug.
+
+You don't need elaborate hooks to improve self-improvement. A text file listing
+common mistakes and preferences, updated manually when you notice patterns, can
+be surprisingly effective.
+
+You don't need custom subagents to extend capabilities. A well-organized
+`CLAUDE.md` with clear conventions might get you 80% of the benefit.
+
+The point isn't that advanced features are bad. They're powerful when used for
+the right reasons. The point is that **the implementation doesn't matter as
+much as the organization.**
+
+## What Actually Matters: Organization and Conventions
+
+Whatever tools you use, effectiveness comes from:
+
+**Clarity for past and future Claudes.** Each conversation starts fresh. Your
+configuration is the bridge between sessions. Is it written for Claude to
+understand, not just for you to remember?
+
+**Conventions over configuration.** Instead of building complex systems, can
+you establish simple rules? "Always check for existing patterns before creating
+new ones." "Reference the architecture doc for new features." Simple
+conventions compound.
+
+**Incremental refinement.** The best setups evolve from real friction, not
+anticipated needs. When something goes wrong, write it down. When you repeat
+yourself, add it to the docs. Let your configuration grow from actual
+experience.
+
+**Knowing when to stop.** Not every problem needs a systematic solution. Some
+issues are one-offs. Some workflows are too rare to optimize. The
+highest-leverage configurations address frequent pain points, not edge cases.
+
+## Start with Goals
+
+Before you install that new MCP server or write that custom hook, ask yourself:
+
+1. Which goal am I serving—self-improvement, working longer, or capabilities?
+2. Is there a simpler way to achieve this?
+3. Will this add more value than context overhead?
+
+Sometimes the answer is yes, the feature is worth it. But often, the better
+path is a text file, a convention, or just accepting that not everything needs
+to be automated.
+
+The AI coding landscape will keep evolving. New features will keep shipping.
+The engineers who get the most value won't be the ones with the most elaborate
+setups—they'll be the ones who stay focused on goals, not gadgets.

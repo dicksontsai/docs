@@ -1,128 +1,151 @@
 ---
-title: 'Your AI Coding Setup Needs Goals, Not More Features'
-description: 'Published December 13, 2025'
+title: 'Goals Over Features for AI Coding Assistants'
+description: 'Published December 15, 2025'
 ---
 
-MCP servers. Custom hooks. Skills. Subagents. The AI coding world moves fast,
-and there's always a shiny new feature promising to transform your workflow.
-It's tempting to dive in, configure everything, and build elaborate setups.
+People often ask me: "What MCP servers should I install? What skills do I need?"
 
-But I've found that obsessing over these features often backfires. The more you
-chase, the more likely you are to end up frustrated, with an AI assistant that
-feels unreliable and bloated. The problem isn't the features themselves—it's
-starting with implementation instead of goals.
+I get where they're coming from. Not everyone has time to optimize their setup,
+and the feature landscape moves fast. But I think there's a more useful
+question: **What goal are you trying to achieve?**
+
+MCP servers, hooks, skills, and subagents are implementation details. They're
+means to ends. If you start with implementation, you risk adding complexity
+that doesn't serve you. If you start with goals, you often find simpler paths.
+
+This post is in the context of Claude Code, but the same principles apply to
+the Claude.ai web interface or any AI coding assistant.
 
 ---
 
-## The Feature Trap
+## The Wrong Question
 
-When a new capability drops, there's a pull to immediately integrate it. MCP
-servers that connect to your databases! Hooks that run before every command!
-Custom subagents for specialized tasks! Each sounds powerful. Each promises
-efficiency.
+Here's a pattern I see:
 
-But here's what often happens:
+| Implementation Question | Goal Question |
+|------------------------|---------------|
+| "Which MCP servers should I install?" | "What information does Claude lack that causes failures?" |
+| "What hooks should I set up?" | "What checks do I do manually that could happen automatically?" |
+| "Should I use the frontend design skill?" | "Is Claude defaulting to generic patterns instead of my project's?" |
+| "How do I create a custom subagent?" | "What reasoning does my workflow need that the base model struggles with?" |
 
-**Context bloat.** Every feature you add is more information Claude has to
-process. More instructions in your `CLAUDE.md`. More tools available. More
-potential confusion about which approach to use when. Your prompts compete with
-your configuration for attention.
+The implementation question assumes you need the feature. The goal question
+helps you figure out if you do—and if a simpler solution exists.
 
-**Trust erosion.** Complex setups have more failure modes. When your MCP server
-flakes out, or your hook produces unexpected output, or your custom subagent
-hallucinates in a domain it wasn't designed for—each failure chips away at your
-confidence in the whole system. You start second-guessing outputs. The
-experience becomes adversarial.
+{/* PLACEHOLDER: Add your concrete example here about the frontend design skill
+    - what's actually valuable about it (forcing project-context-aware thinking)
+    - how that could potentially be achieved other ways */}
 
-**Configuration treadmill.** Features evolve. What worked last month needs
-updates this month. You spend time maintaining your setup instead of using it.
-The overhead starts to outweigh the benefits.
+## The Main Thesis
 
-## Step Back: What Are You Actually Trying to Achieve?
+**Offload to software and filesystem, not to more instructions.**
 
-Before reaching for the next feature, ask: what would make my AI coding
-experience genuinely better?
+Software executes deterministically. Files let you progressively disclose
+information—Claude reads what it needs, when it needs it. Instructions in
+`CLAUDE.md` compete for attention with your actual prompts.
 
-I think most improvements fall into three categories:
+When you find yourself writing elaborate instructions for Claude, ask: could
+this be a script instead? A config file? A CLI that outputs structured data?
+
+The goal is for Claude to deliver quality output with minimal oversight—like
+working with a senior engineer. Senior engineers don't need exhaustive
+instructions. They need good tools, clear context, and well-organized systems.
+
+## A Framework: Five Goals
+
+Rather than asking "what features should I use?", evaluate your setup against
+these goals. Each can be improved with or without special features.
 
 ### 1. Self-Improvement
 
-Is Claude getting better at the specific things _you_ ask it to do?
+Is Claude getting better at what you ask it to do?
 
-This isn't about Claude's base capabilities—that's Anthropic's job. This is
-about _your_ Claude, in _your_ context. Does it remember your preferences? Does
-it understand your codebase's patterns? Does it avoid mistakes it made before?
+Models are static—they don't learn between sessions. Self-improvement is
+fundamentally a context problem: how do you make lessons from past
+conversations available to future ones?
 
-### 2. Working Longer
+**Questions to ask:**
+- Do you review conversations for patterns? How do you capture them?
+- Can Claude improve its own tooling? (CLIs, then Skills, then MCP—in order of
+  simplicity)
+- Can Claude reference relevant past work?
 
-Can Claude sustain effectiveness over extended sessions?
+{/* PLACEHOLDER: Add your example of retrospectives or how you capture lessons
+    from conversations */}
 
-Context windows are large but not infinite. Long conversations accumulate
-cruft. The AI loses track of earlier decisions. Information gets contradicted.
-How do you help Claude stay coherent over hours, not just minutes?
+### 2. Parallelism
 
-### 3. Capabilities
+Can you run multiple Claude instances effectively?
 
-Can Claude do things it couldn't do before?
+For larger tasks, parallelism multiplies throughput. But it requires
+coordination—Claude instances shouldn't step on each other.
 
-Access external systems. Understand domain-specific context. Perform complex
-multi-step workflows. Genuine capability expansion—not just reshuffling what's
-already possible.
+**Approaches:**
+- Git worktrees for isolated workspaces
+- Tmux for managing multiple sessions
+- Issue tracking to coordinate work across instances
 
-## Implementation Is Flexible
+{/* PLACEHOLDER: Add your example of parallel Claude workflows */}
 
-Here's the liberating realization: **these goals can be achieved through many
-implementations, including boring ones.**
+### 3. Autonomy
 
-You don't necessarily need MCP to give Claude access to external information.
-Sometimes a simple CLI script that dumps data to a file works just as well—and
-is easier to debug.
+Can Claude work independently without constant hand-holding?
 
-You don't need elaborate hooks to improve self-improvement. A text file listing
-common mistakes and preferences, updated manually when you notice patterns, can
-be surprisingly effective.
+Autonomy means Claude can make progress on complex tasks without waiting for
+you at every decision point.
 
-You don't need custom subagents to extend capabilities. A well-organized
-`CLAUDE.md` with clear conventions might get you 80% of the benefit.
+**Areas to consider:**
+- Permission handling: what can Claude do without asking?
+- Ambiguity: what should Claude do when requirements are unclear?
+- Persistence: does Claude keep going, or give up at the first obstacle?
 
-The point isn't that advanced features are bad. They're powerful when used for
-the right reasons. The point is that **the implementation doesn't matter as
-much as the organization.**
+{/* PLACEHOLDER: Add your example of autonomy configuration */}
 
-## What Actually Matters: Organization and Conventions
+### 4. Correctness
 
-Whatever tools you use, effectiveness comes from:
+Is Claude's output reliable?
 
-**Clarity for past and future Claudes.** Each conversation starts fresh. Your
-configuration is the bridge between sessions. Is it written for Claude to
-understand, not just for you to remember?
+You shouldn't have to review every line. Build systems that catch mistakes so
+you can trust the output.
 
-**Conventions over configuration.** Instead of building complex systems, can
-you establish simple rules? "Always check for existing patterns before creating
-new ones." "Reference the architecture doc for new features." Simple
-conventions compound.
+**Build software over time:**
+- Robust test suites that Claude can run
+- Pre-commit hooks for automatic validation
+- CI pipelines that catch issues before merge
 
-**Incremental refinement.** The best setups evolve from real friction, not
-anticipated needs. When something goes wrong, write it down. When you repeat
-yourself, add it to the docs. Let your configuration grow from actual
-experience.
+The more you invest in correctness infrastructure, the less you depend on
+hoping Claude got it right.
 
-**Knowing when to stop.** Not every problem needs a systematic solution. Some
-issues are one-offs. Some workflows are too rare to optimize. The
-highest-leverage configurations address frequent pain points, not edge cases.
+{/* PLACEHOLDER: Add your example of correctness tooling */}
 
-## Start with Goals
+### 5. Efficiency
 
-Before you install that new MCP server or write that custom hook, ask yourself:
+Is your setup token-efficient?
 
-1. Which goal am I serving—self-improvement, working longer, or capabilities?
-2. Is there a simpler way to achieve this?
-3. Will this add more value than context overhead?
+Context windows are large but not free. Noisy output wastes tokens. Verbose
+configurations slow things down.
 
-Sometimes the answer is yes, the feature is worth it. But often, the better
-path is a text file, a convention, or just accepting that not everything needs
-to be automated.
+**Optimizations:**
+- CLI tools that output clean, structured data (less noise to parse)
+- "Claude Code Lite": disable unused tools, simplify context for focused tasks
+- Progressive disclosure: don't load everything upfront
 
-The AI coding landscape will keep evolving. New features will keep shipping.
-The engineers who get the most value won't be the ones with the most elaborate
-setups—they'll be the ones who stay focused on goals, not gadgets.
+{/* PLACEHOLDER: Add your example of efficiency improvements */}
+
+## Evaluating Features Against Goals
+
+When a new feature ships, ask:
+
+1. **Which goal does this serve?** If you can't map it to one of the five,
+   you probably don't need it.
+
+2. **What's the simplest implementation?** Maybe you need MCP. Maybe you need
+   a 20-line bash script. Start simple.
+
+3. **Does this reduce instructions or add them?** Prefer software that
+   executes over prose that instructs.
+
+The features aren't bad. MCP servers are powerful. Skills encode useful
+patterns. Hooks automate real work. But they're tools, not goals. The
+engineers who get the most from AI assistants are the ones who stay focused
+on what they're trying to achieve—not what's new.

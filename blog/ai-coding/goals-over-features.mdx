@@ -15,23 +15,35 @@ Claude.ai web interface or any similar tool.
 
 ---
 
-## The Wrong Question
+## A Framework: SPACE
 
-| Implementation Question | Goal Question |
-|------------------------|---------------|
-| "Which MCP servers should I install?" | "What information does Claude lack that causes failures?" |
-| "What hooks should I set up?" | "What checks do I do manually that could happen automatically?" |
-| "Should I use the frontend design skill?" | "Is Claude defaulting to generic patterns instead of my project's?" |
-| "How do I create a custom subagent?" | "What reasoning does my workflow need that the base model struggles with?" |
+Rather than evaluating features, I find it more useful to evaluate goals. I use
+the acronym **SPACE** to remember the five that matter most:
 
-The implementation question assumes you need the feature. The goal question
-helps you figure out whether you do—and whether a simpler solution exists.
+- **S**elf-improvement
+- **P**arallelism
+- **A**utonomy
+- **C**orrectness
+- **E**fficiency
 
-{/* PLACEHOLDER: Add your concrete example here about the frontend design skill
-    - what's actually valuable about it (forcing project-context-aware thinking)
-    - how that could potentially be achieved other ways */}
+Each of these can be improved with or without any particular feature. The
+question isn't "what should I install?" but "how am I doing on each dimension?"
 
-## The Main Thesis
+## The Inspiration: Senior Engineers
+
+This framework is inspired by how I think about working with senior engineers.
+
+When a senior engineer joins your team, you don't hand them a 50-page
+instruction manual and hope they follow it. You set up the right environment:
+good tooling, clear context, well-organized systems. You give them access to
+the information they need. You establish conventions and verification systems
+so mistakes get caught early. Then you trust them to operate independently.
+
+The same principles apply to AI coding assistants. The goal is to put Claude in
+a position to succeed, improve, and thrive—not to write increasingly elaborate
+instructions hoping it will follow them.
+
+## The Thesis: Environment Over Instructions
 
 **Offload to software and filesystem, not to more instructions.**
 
@@ -45,15 +57,14 @@ needs, when it needs it, rather than having everything compete for attention in
 `CLAUDE.md`. The filesystem becomes an extension of Claude's working memory,
 organized by you.
 
-The goal is for Claude to deliver quality output with minimal oversight, much
-like working with a senior engineer. Senior engineers don't need exhaustive
-instructions for every task—they need good tools, clear context, and
-well-organized systems to work within.
+Build the right environment. The features are just tools for doing that.
 
-## A Framework: Five Goals
+{/* PLACEHOLDER: Add your concrete example here about a feature (like the
+    frontend design skill) where the value isn't the feature itself, but what
+    it forces the model to do—and how that could potentially be achieved other
+    ways */}
 
-Rather than asking "what features should I use?", evaluate your setup against
-these goals.
+## The Five Goals
 
 ### 1. Self-Improvement
 

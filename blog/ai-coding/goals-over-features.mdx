@@ -5,22 +5,17 @@ description: 'Published December 15, 2025'
 
 People often ask me: "What MCP servers should I install? What skills do I need?"
 
-I get where they're coming from. Not everyone has time to optimize their setup,
-and the feature landscape moves fast. But I think there's a more useful
-question: **What goal are you trying to achieve?**
+I get where they're coming from—not everyone has time to optimize their setup,
+and the feature landscape moves fast. But I think the more useful question is:
+**What goal are you trying to achieve?**
 
-MCP servers, hooks, skills, and subagents are implementation details. They're
-means to ends. If you start with implementation, you risk adding complexity
-that doesn't serve you. If you start with goals, you often find simpler paths.
-
-This post is in the context of Claude Code, but the same principles apply to
-the Claude.ai web interface or any AI coding assistant.
+This post offers a framework for thinking about AI coding assistant setup. It's
+written in the context of Claude Code, but the principles apply to the
+Claude.ai web interface or any similar tool.
 
 ---
 
 ## The Wrong Question
-
-Here's a pattern I see:
 
 | Implementation Question | Goal Question |
 |------------------------|---------------|
@@ -30,7 +25,7 @@ Here's a pattern I see:
 | "How do I create a custom subagent?" | "What reasoning does my workflow need that the base model struggles with?" |
 
 The implementation question assumes you need the feature. The goal question
-helps you figure out if you do—and if a simpler solution exists.
+helps you figure out whether you do—and whether a simpler solution exists.
 
 {/* PLACEHOLDER: Add your concrete example here about the frontend design skill
     - what's actually valuable about it (forcing project-context-aware thinking)
@@ -40,35 +35,42 @@ helps you figure out if you do—and if a simpler solution exists.
 
 **Offload to software and filesystem, not to more instructions.**
 
-Software executes deterministically. Files let you progressively disclose
-information—Claude reads what it needs, when it needs it. Instructions in
-`CLAUDE.md` compete for attention with your actual prompts.
+Instructions to Claude are probabilistic. Claude might follow them, might not,
+might interpret them in ways you didn't anticipate. Software executes
+deterministically. When you encode something in a script or a linter, you get
+guarantees that prose instructions can't provide.
 
-When you find yourself writing elaborate instructions for Claude, ask: could
-this be a script instead? A config file? A CLI that outputs structured data?
+Files also let you progressively disclose information—Claude reads what it
+needs, when it needs it, rather than having everything compete for attention in
+`CLAUDE.md`. The filesystem becomes an extension of Claude's working memory,
+organized by you.
 
-The goal is for Claude to deliver quality output with minimal oversight—like
-working with a senior engineer. Senior engineers don't need exhaustive
-instructions. They need good tools, clear context, and well-organized systems.
+The goal is for Claude to deliver quality output with minimal oversight, much
+like working with a senior engineer. Senior engineers don't need exhaustive
+instructions for every task—they need good tools, clear context, and
+well-organized systems to work within.
 
 ## A Framework: Five Goals
 
 Rather than asking "what features should I use?", evaluate your setup against
-these goals. Each can be improved with or without special features.
+these goals.
 
 ### 1. Self-Improvement
 
-Is Claude getting better at what you ask it to do?
+Is Claude getting better at the specific things you ask it to do?
 
-Models are static—they don't learn between sessions. Self-improvement is
-fundamentally a context problem: how do you make lessons from past
-conversations available to future ones?
+Models are static—they don't learn from your sessions. So self-improvement is
+really a context management problem: how do you make lessons from past
+conversations available to future ones? You're building an external memory
+system, much like how organizations encode institutional knowledge in
+documentation and processes rather than relying on any single person's memory.
 
 **Questions to ask:**
-- Do you review conversations for patterns? How do you capture them?
-- Can Claude improve its own tooling? (CLIs, then Skills, then MCP—in order of
-  simplicity)
-- Can Claude reference relevant past work?
+- Do you review conversations for recurring patterns or mistakes? How do you
+  capture and surface those lessons?
+- Can Claude improve its own tooling over time? (CLIs are the easiest extension
+  point, then Skills, then MCP—roughly in order of simplicity.)
+- Can Claude reference relevant past work when it would help?
 
 {/* PLACEHOLDER: Add your example of retrospectives or how you capture lessons
     from conversations */}
@@ -77,13 +79,17 @@ conversations available to future ones?
 
 Can you run multiple Claude instances effectively?
 
-For larger tasks, parallelism multiplies throughput. But it requires
-coordination—Claude instances shouldn't step on each other.
+For larger tasks, parallelism multiplies throughput—but only if you can
+structure work so that instances don't step on each other. The question isn't
+whether you *can* run more instances, but whether the coordination costs
+outweigh the gains. This echoes Brooks' observation that adding people to a
+project adds communication overhead; the same applies to parallel AI agents.
 
-**Approaches:**
-- Git worktrees for isolated workspaces
-- Tmux for managing multiple sessions
-- Issue tracking to coordinate work across instances
+**Approaches that reduce coordination costs:**
+- Git worktrees give each instance an isolated workspace
+- Tmux helps you manage multiple sessions without losing track
+- Issue tracking can coordinate work across instances by giving each a clear,
+  independent scope
 
 {/* PLACEHOLDER: Add your example of parallel Claude workflows */}
 
@@ -91,61 +97,72 @@ coordination—Claude instances shouldn't step on each other.
 
 Can Claude work independently without constant hand-holding?
 
-Autonomy means Claude can make progress on complex tasks without waiting for
-you at every decision point.
+There's a tension here between autonomy and control. Too little autonomy means
+constant interruption—Claude asks permission for everything, and you become a
+bottleneck. Too much autonomy means Claude goes off in the wrong direction for
+a long time before you catch it. The answer isn't a single setting; it's about
+creating conditions where Claude's independent judgment is trustworthy.
 
 **Areas to consider:**
-- Permission handling: what can Claude do without asking?
-- Ambiguity: what should Claude do when requirements are unclear?
-- Persistence: does Claude keep going, or give up at the first obstacle?
+- Permission handling: what can Claude do without asking? Where should it stop
+  and check?
+- Ambiguity: when requirements are unclear, should Claude make reasonable
+  assumptions or ask for clarification?
+- Persistence: does Claude keep going when it hits obstacles, or does it give
+  up and wait for you?
 
 {/* PLACEHOLDER: Add your example of autonomy configuration */}
 
 ### 4. Correctness
 
-Is Claude's output reliable?
+Is Claude's output reliable enough that you don't have to review every line?
 
-You shouldn't have to review every line. Build systems that catch mistakes so
-you can trust the output.
+The goal isn't to prevent Claude from ever making mistakes—that's unrealistic.
+The goal is to build systems that catch mistakes automatically, so you can
+trust the output without exhaustive review. This is defense in depth: the same
+principle behind automated testing in software, where you don't rely on any
+single developer being perfect.
 
-**Build software over time:**
-- Robust test suites that Claude can run
-- Pre-commit hooks for automatic validation
-- CI pipelines that catch issues before merge
+**Build verification infrastructure over time:**
+- Test suites that Claude can run to validate its changes
+- Pre-commit hooks that enforce style and catch common errors
+- CI pipelines that verify correctness before code reaches main
 
-The more you invest in correctness infrastructure, the less you depend on
-hoping Claude got it right.
+The more you invest in this infrastructure, the less you depend on hoping
+Claude got it right.
 
 {/* PLACEHOLDER: Add your example of correctness tooling */}
 
 ### 5. Efficiency
 
-Is your setup token-efficient?
+Is your setup making good use of context?
 
-Context windows are large but not free. Noisy output wastes tokens. Verbose
-configurations slow things down.
+Context windows are large but not unlimited, and every token spent on noise is
+a token not available for your actual problem. Efficiency is often neglected
+because modern context windows feel spacious—until you're deep in a complex
+task and realize you've been burning tokens on verbose tool output.
 
 **Optimizations:**
-- CLI tools that output clean, structured data (less noise to parse)
-- "Claude Code Lite": disable unused tools, simplify context for focused tasks
-- Progressive disclosure: don't load everything upfront
+- CLI tools that output clean, structured data rather than walls of text
+- A lighter configuration for focused tasks—disable unused tools, simplify
+  context when you don't need the full setup
+- Progressive disclosure: load information as needed rather than dumping
+  everything upfront
 
 {/* PLACEHOLDER: Add your example of efficiency improvements */}
 
-## Evaluating Features Against Goals
+## Evaluating New Features
 
 When a new feature ships, ask:
 
-1. **Which goal does this serve?** If you can't map it to one of the five,
-   you probably don't need it.
+1. **Which goal does this serve?** If you can't map it to one of the five, you
+   probably don't need it yet.
 
-2. **What's the simplest implementation?** Maybe you need MCP. Maybe you need
-   a 20-line bash script. Start simple.
+2. **What's the simplest implementation?** Maybe you need MCP. Maybe you need a
+   20-line bash script. Start with the simpler option.
 
-3. **Does this reduce instructions or add them?** Prefer software that
-   executes over prose that instructs.
+3. **Does this reduce instructions or add them?** Prefer solutions that execute
+   deterministically over prose that Claude might misinterpret.
 
-The features aren't bad. MCP servers are powerful. Skills encode useful
-patterns. Hooks automate real work. But they're tools, not goals. The
-engineers who get the most from AI assistants are the ones who stay focused
-on what they're trying to achieve—not what's new.
+The engineers who get the most from AI coding assistants tend to be the ones
+who stay focused on what they're trying to achieve, rather than on what's new.

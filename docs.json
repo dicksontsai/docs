@@ -42,6 +42,11 @@
             "pages": ["blog/fun/all-posts"]
           },
           {
+            "group": "En español",
+            "icon": "language",
+            "pages": ["blog/es/all-posts"]
+          },
+          {
             "group": "By Date",
             "icon": "calendar",
             "pages": ["blog/all-posts/2025", "blog/all-posts/pre-2025"]

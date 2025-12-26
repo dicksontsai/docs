@@ -1,0 +1,183 @@
+---
+title: 'Everyone Has an AI That Can Code. Now What?'
+description: 'Published December 15, 2025'
+---
+
+Everyone has access to an AI that can code. The barrier to entry is gone. You
+can spin up Claude Code, Cursor, Copilot, or a dozen other tools and start
+shipping code with AI assistance today.
+
+So now what?
+
+The natural next question is: "What features should I use? What MCP servers
+should I install? What skills do I need?" But I think that's the wrong place to
+start. Features are implementation details. The more useful question is: **What
+goals are you trying to achieve?**
+
+This post offers a framework for thinking about that question. It's written in
+the context of Claude Code, but the principles apply to any AI coding tool.
+
+---
+
+## A Framework: SPACE
+
+Rather than evaluating features, I find it more useful to evaluate goals. I use
+the acronym **SPACE** to remember the five that matter most:
+
+- **S**elf-improvement
+- **P**arallelism
+- **A**utonomy
+- **C**orrectness
+- **E**fficiency
+
+Each of these can be improved with or without any particular feature. The
+question isn't "what should I install?" but "how am I doing on each dimension?"
+
+## The Inspiration: Senior Engineers
+
+This framework is inspired by how I think about working with senior engineers.
+
+When a senior engineer joins your team, you don't hand them a 50-page
+instruction manual and hope they follow it. You set up the right environment:
+good tooling, clear context, well-organized systems. You give them access to
+the information they need. You establish conventions and verification systems
+so mistakes get caught early. Then you trust them to operate independently.
+
+The same principles apply to AI coding assistants. The goal is to put Claude in
+a position to succeed, improve, and thrive—not to write increasingly elaborate
+instructions hoping it will follow them.
+
+## The Thesis: Environment Over Instructions
+
+**Offload to software and filesystem, not to more instructions.**
+
+Instructions to Claude are probabilistic. Claude might follow them, might not,
+might interpret them in ways you didn't anticipate. Software executes
+deterministically. When you encode something in a script or a linter, you get
+guarantees that prose instructions can't provide.
+
+Files also let you progressively disclose information—Claude reads what it
+needs, when it needs it, rather than having everything compete for attention in
+`CLAUDE.md`. The filesystem becomes an extension of Claude's working memory,
+organized by you.
+
+Build the right environment. The features are just tools for doing that.
+
+{/* PLACEHOLDER: Add your concrete example here about a feature (like the
+    frontend design skill) where the value isn't the feature itself, but what
+    it forces the model to do—and how that could potentially be achieved other
+    ways */}
+
+## The Five Goals
+
+### 1. Self-Improvement
+
+Is Claude getting better at the specific things you ask it to do?
+
+Models are static—they don't learn from your sessions. So self-improvement is
+really a context management problem: how do you make lessons from past
+conversations available to future ones? You're building an external memory
+system, much like how organizations encode institutional knowledge in
+documentation and processes rather than relying on any single person's memory.
+
+**Questions to ask:**
+- Do you review conversations for recurring patterns or mistakes? How do you
+  capture and surface those lessons?
+- Can Claude improve its own tooling over time? (CLIs are the easiest extension
+  point, then Skills, then MCP—roughly in order of simplicity.)
+- Can Claude reference relevant past work when it would help?
+
+{/* PLACEHOLDER: Add your example of retrospectives or how you capture lessons
+    from conversations */}
+
+### 2. Parallelism
+
+Can you run multiple Claude instances effectively?
+
+For larger tasks, parallelism multiplies throughput—but only if you can
+structure work so that instances don't step on each other. The question isn't
+whether you *can* run more instances, but whether the coordination costs
+outweigh the gains. This echoes Brooks' observation that adding people to a
+project adds communication overhead; the same applies to parallel AI agents.
+
+**Approaches that reduce coordination costs:**
+- Git worktrees give each instance an isolated workspace
+- Tmux helps you manage multiple sessions without losing track
+- Issue tracking can coordinate work across instances by giving each a clear,
+  independent scope
+
+{/* PLACEHOLDER: Add your example of parallel Claude workflows */}
+
+### 3. Autonomy
+
+Can Claude work independently without constant hand-holding?
+
+There's a tension here between autonomy and control. Too little autonomy means
+constant interruption—Claude asks permission for everything, and you become a
+bottleneck. Too much autonomy means Claude goes off in the wrong direction for
+a long time before you catch it. The answer isn't a single setting; it's about
+creating conditions where Claude's independent judgment is trustworthy.
+
+**Areas to consider:**
+- Permission handling: what can Claude do without asking? Where should it stop
+  and check?
+- Ambiguity: when requirements are unclear, should Claude make reasonable
+  assumptions or ask for clarification?
+- Persistence: does Claude keep going when it hits obstacles, or does it give
+  up and wait for you?
+
+{/* PLACEHOLDER: Add your example of autonomy configuration */}
+
+### 4. Correctness
+
+Is Claude's output reliable enough that you don't have to review every line?
+
+The goal isn't to prevent Claude from ever making mistakes—that's unrealistic.
+The goal is to build systems that catch mistakes automatically, so you can
+trust the output without exhaustive review. This is defense in depth: the same
+principle behind automated testing in software, where you don't rely on any
+single developer being perfect.
+
+**Build verification infrastructure over time:**
+- Test suites that Claude can run to validate its changes
+- Pre-commit hooks that enforce style and catch common errors
+- CI pipelines that verify correctness before code reaches main
+
+The more you invest in this infrastructure, the less you depend on hoping
+Claude got it right.
+
+{/* PLACEHOLDER: Add your example of correctness tooling */}
+
+### 5. Efficiency
+
+Is your setup making good use of context?
+
+Context windows are large but not unlimited, and every token spent on noise is
+a token not available for your actual problem. Efficiency is often neglected
+because modern context windows feel spacious—until you're deep in a complex
+task and realize you've been burning tokens on verbose tool output.
+
+**Optimizations:**
+- CLI tools that output clean, structured data rather than walls of text
+- A lighter configuration for focused tasks—disable unused tools, simplify
+  context when you don't need the full setup
+- Progressive disclosure: load information as needed rather than dumping
+  everything upfront
+
+{/* PLACEHOLDER: Add your example of efficiency improvements */}
+
+## Evaluating New Features
+
+When a new feature ships, ask:
+
+1. **Which goal does this serve?** If you can't map it to one of the five, you
+   probably don't need it yet.
+
+2. **What's the simplest implementation?** Maybe you need MCP. Maybe you need a
+   20-line bash script. Start with the simpler option.
+
+3. **Does this reduce instructions or add them?** Prefer solutions that execute
+   deterministically over prose that Claude might misinterpret.
+
+The engineers who get the most from AI coding assistants tend to be the ones
+who stay focused on what they're trying to achieve, rather than on what's new.

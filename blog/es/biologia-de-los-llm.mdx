@@ -1,0 +1,151 @@
+---
+title: 'Aplicando la «Biología de los LLM» para potenciar mi desarrollo'
+description: 'Published December 25, 2025'
+---
+
+_Aviso: Trabajo en Anthropic, pero esta publicación refleja mis opiniones
+personales y no representa la postura oficial de mi empleador._
+
+---
+
+El estudio que más me ha marcado este año es
+[_On the Biology of a Large Language Model_](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)
+(marzo de 2025) de Anthropic. En él, los investigadores presentan un método para
+observar el "pensamiento interno" de los modelos. Sus hallazgos han transformado
+mi manera de diseñar _prompts_ para herramientas de programación como Claude
+Code.
+
+He aprendido que, para determinar el siguiente "token", los LLM procesan
+múltiples soluciones en paralelo y las agregan en el resultado final, algo muy
+diferente a cómo pensamos nosotros.
+
+## Resumen de «Sobre La Biología de los LLM»
+
+El desafío es que las neuronas de Claude 3.5 Haiku, el modelo estudiado en esta
+investigación, son **polisemánticas**: una sola neurona puede representar varios
+conceptos a la vez. Para solucionarlo, crearon un "modelo de reemplazo" que
+utiliza **características** (features) más interpretables.
+
+<Frame caption="Figura del estudio: El modelo de reemplazo sustituye neuronas por características interpretables.">
+  <img src="/images/original_replacement_model.png" alt="Modelo de reemplazo" />
+</Frame>
+
+Empecemos con
+[el primer ejemplo](https://transformer-circuits.pub/2025/attribution-graphs/biology.html#dives-tracing)
+del estudio. Cuando el modelo recibe «_Fact: the capital of the state containing
+Dallas is..._», responde correctamente **"Austin"**. Gracias a este estudio,
+sabemos que no es una simple asociación memorizada, sino un razonamiento de dos
+pasos.
+
+<Frame caption="Figura del estudio: El grafo de atribución muestra cómo el modelo llega a 'Austin'. Cada caja es un 'supernodo', un grupo de características relacionadas (como 'Texas' o 'ciudad capital').">
+  <img
+    src="/images/supernode_viz.png"
+    alt="Grafo de atribución Dallas-Texas-Austin"
+  />
+</Frame>
+
+- Paso 1: En paralelo, identifica que Dallas está en Texas y activa el concepto
+  de "decir una capital".
+- Paso 2: Combina ambos para llegar a "Austin".
+
+La prueba definitiva fue una intervención: al inhibir las características de
+"Texas" y forzar las de "California", el modelo cambió su respuesta a
+"Sacramento" de forma coherente.
+
+## ¿Cómo suma un LLM dos números?
+
+[El caso de la suma](https://transformer-circuits.pub/2025/attribution-graphs/biology.html#dives-addition)
+es, en mi opinión, el más interesante.
+
+> `36 + 59 = ___`
+
+Mientras que los humanos usamos un algoritmo secuencial (sumar unidades y
+"llevarse una" a las decenas), el LLM divide el problema en **vías paralelas**.
+
+- Vía de las unidades: Características de "tabla de búsqueda" detectan que un
+  número termina en 6 y el otro en 9, por lo que el resultado debe terminar
+  en 5.
+- Vía de aproximación (1): Algunas características detectan que 36 es "cerca de
+  40" y 59 es "cerca de 50", sugiriendo que el resultado ronda el 90.
+- Vía de aproximación (2): Otras características detectan que el problema es
+  como ~36 + ~60, sugiriendo que el resultado debe rondar el 96.
+
+Al combinar estas señales (un número cerca de 92-100 que termina en 5), el
+modelo deduce que es **95**. Este cálculo ocurre de inmediato en el token del
+signo igual `=`.
+
+<Frame caption="Figura del estudio: Las vías paralelas que el modelo usa para calcular 36 + 59 = 95.">
+  <img src="/images/addition_viz.png" alt="Vías paralelas para suma" />
+</Frame>
+
+## Cómo aplico yo el estudio a la programación
+
+<Note>
+  Esta sección contiene mi especulación a partir del estudio. [On the Biology of
+  a Large Language
+  Model](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)
+  se enfoca en el MLP, no en la atención.
+</Note>
+
+El estudio me hizo ver la importancia de la **ingeniería de contexto**. Me dio
+un modelo mental para manipular el contexto a fin de activar las diversas vías
+de procesamiento **paralelo**.
+
+He observado que si no proporcionas instrucciones detalladas, el modelo elegirá
+la "ruta" más genérica presente en el modelo. Un gran ejemplo de solución a este
+problema es el
+[Frontend Skill](https://claude.com/blog/improving-frontend-design-through-skills)
+([enlace a GitHub](https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md))
+de Anthropic. El Frontend Skill no es más que un prompt automático que fuerza al
+modelo a evitar resultados genéricos mediante instrucciones explícitas:
+
+> Before coding, understand the context and commit to a BOLD aesthetic
+> direction:\
+> (Antes de programar, entiende el contexto y comprométete con una dirección
+> estética ATREVIDA.)
+
+> Interpret creatively and make unexpected choices that feel genuinely designed
+> for the context. No design should be the same.\
+> (Interpreta con creatividad y haz decisiones inesperadas que se sientan
+> auténticamente diseñadas para el contexto. Ningún diseño debe ser igual.)
+
+<Frame caption="Sin el Frontend Skill: un diseño genérico de dashboard.">
+  <img src="/images/antes_de_frontend_skill.png" alt="Dashboard genérico" />
+</Frame>
+
+<Frame caption="Con el Frontend Skill: un diseño único adaptado al contexto.">
+  <img
+    src="/images/despues_de_frontend_skill.png"
+    alt="Dashboard con diseño único"
+  />
+</Frame>
+
+Lo que importa de este skill no son los detalles internos, sino las
+instrucciones que fuerzan al modelo a diseñar la página web según el contexto
+original. Así, naturalmente resulta un diseño único por cada uso del skill.
+Siguiendo la lógica del estudio, la pauta de entender el contexto quizás
+reconfigura las vías de atención: el modelo termina priorizando el contexto
+específico sobre su entrenamiento general.
+
+### Consejos prácticos
+
+- **Cuidado con la auto-explicación**: Si pides a un modelo que explique cómo
+  resolvió algo, su respuesta puede ser una "simulación". El estudio demostró
+  que el modelo decía haber sumado paso a paso cuando, por dentro, usó
+  aproximaciones paralelas.
+- **Contexto rico = Mejores vías**: Cuanto más rico sea el contexto, más vías de
+  conocimiento especializado activarás en el modelo.
+- **Aprovecha el razonamiento paralelo**: Obtendrás mejores resultados si
+  permites que el modelo proponga varias opciones o piense paso a paso (Chain of
+  Thought) para alinear sus procesos internos con la salida final.
+
+## Conclusión: Ten en cuenta el comportamiento de los LLM
+
+Los LLM no son programas tradicionales ni piensan como nosotros. Son sistemas de
+activación de conocimientos en paralelo. Mantener un contexto estructurado es
+configurar su maquinaria interna para que trabaje a nuestro favor.
+
+Hay mucho contenido en
+[_On the Biology of a Large Language Model_](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)
+que no hemos llegado a cubrir aquí. Los invito a revisar a fondo los ejemplos y
+las variaciones que probaron los investigadores.
